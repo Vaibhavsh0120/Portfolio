@@ -1,26 +1,25 @@
 "use client"
 
+import { useState } from "react"
+
 import { motion } from "framer-motion"
+import { AlertCircle, CheckCircle, Clock, Mail, MapPin, MessageCircle, Send } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Mail, MapPin, Send, Clock, MessageCircle, CheckCircle, AlertCircle } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { ContactContent } from "@/lib/portfolio/types"
 
 function ContactBackground() {
-  const positions = useMemo(() => 
-    Array.from({ length: 12 }, (_, i) => ({
-      left: `${15 + (i * 7.5) % 85}%`,
-      top: `${10 + (i * 6.3) % 80}%`,
-    })), []
-  )
-
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {positions.map((position, i) => (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {Array.from({ length: 12 }, (_, i) => (
         <motion.div
           key={i}
-          className="absolute w-1 h-1 bg-neutral-300/30 dark:bg-neutral-600/30 rounded-full"
-          style={position}
+          className="absolute h-1 w-1 rounded-full bg-neutral-300/30 dark:bg-neutral-600/30"
+          style={{
+            left: `${15 + (i * 7.5) % 85}%`,
+            top: `${10 + (i * 6.3) % 80}%`,
+          }}
           animate={{
             scale: [1, 1.5, 1],
             opacity: [0.3, 0.8, 0.3],
@@ -46,64 +45,71 @@ interface FormData {
 }
 
 interface FormStatus {
-  type: 'idle' | 'loading' | 'success' | 'error'
+  type: "idle" | "loading" | "success" | "error"
   message: string
 }
 
-export default function ContactSection() {
+const detailIcons = {
+  Email: Mail,
+  Location: MapPin,
+}
+
+interface ContactSectionProps {
+  contact: ContactContent
+}
+
+export default function ContactSection({ contact }: ContactSectionProps) {
   const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    subject: '',
-    message: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: "",
   })
 
   const [status, setStatus] = useState<FormStatus>({
-    type: 'idle',
-    message: ''
+    type: "idle",
+    message: "",
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Basic validation
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.subject || !formData.message) {
       setStatus({
-        type: 'error',
-        message: 'Please fill in all fields.'
+        type: "error",
+        message: "Please fill in all fields.",
       })
       return
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
       setStatus({
-        type: 'error',
-        message: 'Please enter a valid email address.'
+        type: "error",
+        message: "Please enter a valid email address.",
       })
       return
     }
 
     setStatus({
-      type: 'loading',
-      message: 'Sending message...'
+      type: "loading",
+      message: "Sending message...",
     })
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       })
@@ -112,71 +118,63 @@ export default function ContactSection() {
 
       if (response.ok) {
         setStatus({
-          type: 'success',
-          message: 'Message sent successfully! I\'ll get back to you soon.'
+          type: "success",
+          message: "Message sent successfully! I'll get back to you soon.",
         })
-        // Reset form
         setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          subject: '',
-          message: ''
+          firstName: "",
+          lastName: "",
+          email: "",
+          subject: "",
+          message: "",
         })
       } else {
         setStatus({
-          type: 'error',
-          message: result.error || 'Failed to send message. Please try again.'
+          type: "error",
+          message: result.error || "Failed to send message. Please try again.",
         })
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       setStatus({
-        type: 'error',
-        message: 'Network error. Please check your connection and try again.'
+        type: "error",
+        message: "Network error. Please check your connection and try again.",
       })
     }
   }
 
   return (
-    <section className="relative py-16 md:py-24 bg-gradient-to-br from-neutral-50 via-white to-neutral-100 
-                      dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 overflow-hidden">
+    <section className="relative overflow-hidden bg-gradient-to-br from-neutral-50 via-white to-neutral-100 py-16 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 md:py-24">
       <ContactBackground />
-      
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+
+      <div className="container relative z-10 mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
+          className="mb-12 text-center md:mb-16"
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="inline-block mb-4"
+            className="mb-4 inline-block"
           >
-            <span className="px-4 py-2 rounded-full bg-neutral-200/50 dark:bg-neutral-800/50 
-                           text-neutral-600 dark:text-neutral-400 text-sm font-medium backdrop-blur-sm
-                           border border-neutral-300/20 dark:border-neutral-700/20">
-              Get in touch
+            <span className="rounded-full border border-neutral-300/20 bg-neutral-200/50 px-4 py-2 text-sm font-medium text-neutral-600 backdrop-blur-sm dark:border-neutral-700/20 dark:bg-neutral-800/50 dark:text-neutral-400">
+              {contact.badge}
             </span>
           </motion.div>
-          
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-transparent bg-clip-text 
-                       bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 
-                       dark:from-white dark:via-neutral-200 dark:to-white">
-            Let&apos;s Work Together
+
+          <h2 className="mb-4 bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 bg-clip-text text-3xl font-bold text-transparent dark:from-white dark:via-neutral-200 dark:to-white md:mb-6 md:text-4xl lg:text-5xl">
+            {contact.title}
           </h2>
-          <p className="text-base md:text-lg text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto px-4 md:px-0">
-            Have a project in mind? I&apos;d love to hear about it. Let&apos;s discuss how we can 
-            bring your ideas to life.
+          <p className="mx-auto max-w-3xl px-4 text-base text-neutral-600 dark:text-neutral-400 md:px-0 md:text-lg">
+            {contact.description}
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-16">
+        <div className="grid gap-8 lg:grid-cols-2 md:gap-16">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -185,47 +183,43 @@ export default function ContactSection() {
             className="order-2 lg:order-1"
           >
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-neutral-200/50 to-neutral-300/50 
-                            dark:from-neutral-700/50 dark:to-neutral-600/50 rounded-3xl blur-2xl opacity-60" />
-              <Card className="relative shadow-2xl bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm
-                             border border-neutral-200/50 dark:border-neutral-700/50">
+              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-neutral-200/50 to-neutral-300/50 opacity-60 blur-2xl dark:from-neutral-700/50 dark:to-neutral-600/50" />
+              <Card className="relative border border-neutral-200/50 bg-white/90 shadow-2xl backdrop-blur-sm dark:border-neutral-700/50 dark:bg-neutral-800/90">
                 <CardContent className="p-6 md:p-8">
-                  <div className="flex items-center gap-3 mb-6 md:mb-8">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-200 
-                                  dark:from-neutral-700 dark:to-neutral-600 flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-neutral-600 dark:text-neutral-300" />
+                  <div className="mb-6 flex items-center gap-3 md:mb-8">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-700 dark:to-neutral-600 md:h-12 md:w-12">
+                      <MessageCircle className="h-5 w-5 text-neutral-600 dark:text-neutral-300 md:h-6 md:w-6" />
                     </div>
-                    <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 dark:text-white">
-                      Send me a message
+                    <h3 className="text-xl font-semibold text-neutral-900 dark:text-white md:text-2xl">
+                      {contact.formTitle}
                     </h3>
                   </div>
 
-                  {/* Status Message */}
-                  {status.type !== 'idle' && (
+                  {status.type !== "idle" ? (
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-                        status.type === 'success' 
-                          ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800' 
-                          : status.type === 'error'
-                          ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
-                          : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                      className={`mb-6 flex items-center gap-3 rounded-xl border p-4 ${
+                        status.type === "success"
+                          ? "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300"
+                          : status.type === "error"
+                            ? "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300"
+                            : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-300"
                       }`}
                     >
-                      {status.type === 'success' && <CheckCircle className="w-5 h-5 flex-shrink-0" />}
-                      {status.type === 'error' && <AlertCircle className="w-5 h-5 flex-shrink-0" />}
-                      {status.type === 'loading' && (
-                        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                      )}
+                      {status.type === "success" ? <CheckCircle className="h-5 w-5 flex-shrink-0" /> : null}
+                      {status.type === "error" ? <AlertCircle className="h-5 w-5 flex-shrink-0" /> : null}
+                      {status.type === "loading" ? (
+                        <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : null}
                       <span className="text-sm font-medium">{status.message}</span>
                     </motion.div>
-                  )}
-                  
+                  ) : null}
+
                   <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-                    <div className="grid md:grid-cols-2 gap-3 md:gap-4">
+                    <div className="grid gap-3 md:grid-cols-2 md:gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                           First Name *
                         </label>
                         <input
@@ -233,17 +227,13 @@ export default function ContactSection() {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleInputChange}
-                          className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 
-                                   bg-white/80 dark:bg-neutral-800/80 text-neutral-900 dark:text-white text-sm md:text-base
-                                   focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 focus:border-transparent
-                                   transition-all duration-300 backdrop-blur-sm
-                                   hover:bg-white dark:hover:bg-neutral-800"
+                          className="w-full rounded-xl border border-neutral-200 bg-white/80 px-3 py-2.5 text-sm text-neutral-900 backdrop-blur-sm transition-all duration-300 hover:bg-white focus:border-transparent focus:ring-2 focus:ring-neutral-400 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-800 dark:focus:ring-neutral-500 md:px-4 md:py-3 md:text-base"
                           placeholder="John"
                           required
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                           Last Name *
                         </label>
                         <input
@@ -251,18 +241,14 @@ export default function ContactSection() {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleInputChange}
-                          className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 
-                                   bg-white/80 dark:bg-neutral-800/80 text-neutral-900 dark:text-white text-sm md:text-base
-                                   focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 focus:border-transparent
-                                   transition-all duration-300 backdrop-blur-sm
-                                   hover:bg-white dark:hover:bg-neutral-800"
+                          className="w-full rounded-xl border border-neutral-200 bg-white/80 px-3 py-2.5 text-sm text-neutral-900 backdrop-blur-sm transition-all duration-300 hover:bg-white focus:border-transparent focus:ring-2 focus:ring-neutral-400 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-800 dark:focus:ring-neutral-500 md:px-4 md:py-3 md:text-base"
                           placeholder="Doe"
                           required
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                         Email *
                       </label>
                       <input
@@ -270,17 +256,13 @@ export default function ContactSection() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 
-                                 bg-white/80 dark:bg-neutral-800/80 text-neutral-900 dark:text-white text-sm md:text-base
-                                 focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 focus:border-transparent
-                                 transition-all duration-300 backdrop-blur-sm
-                                 hover:bg-white dark:hover:bg-neutral-800"
+                        className="w-full rounded-xl border border-neutral-200 bg-white/80 px-3 py-2.5 text-sm text-neutral-900 backdrop-blur-sm transition-all duration-300 hover:bg-white focus:border-transparent focus:ring-2 focus:ring-neutral-400 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-800 dark:focus:ring-neutral-500 md:px-4 md:py-3 md:text-base"
                         placeholder="john@example.com"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                         Subject *
                       </label>
                       <input
@@ -288,17 +270,13 @@ export default function ContactSection() {
                         name="subject"
                         value={formData.subject}
                         onChange={handleInputChange}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 
-                                 bg-white/80 dark:bg-neutral-800/80 text-neutral-900 dark:text-white text-sm md:text-base
-                                 focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 focus:border-transparent
-                                 transition-all duration-300 backdrop-blur-sm
-                                 hover:bg-white dark:hover:bg-neutral-800"
+                        className="w-full rounded-xl border border-neutral-200 bg-white/80 px-3 py-2.5 text-sm text-neutral-900 backdrop-blur-sm transition-all duration-300 hover:bg-white focus:border-transparent focus:ring-2 focus:ring-neutral-400 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-800 dark:focus:ring-neutral-500 md:px-4 md:py-3 md:text-base"
                         placeholder="Project Inquiry"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                         Message *
                       </label>
                       <textarea
@@ -306,32 +284,24 @@ export default function ContactSection() {
                         value={formData.message}
                         onChange={handleInputChange}
                         rows={4}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 
-                                 bg-white/80 dark:bg-neutral-800/80 text-neutral-900 dark:text-white text-sm md:text-base
-                                 focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 focus:border-transparent
-                                 transition-all duration-300 resize-none backdrop-blur-sm
-                                 hover:bg-white dark:hover:bg-neutral-800"
+                        className="w-full resize-none rounded-xl border border-neutral-200 bg-white/80 px-3 py-2.5 text-sm text-neutral-900 backdrop-blur-sm transition-all duration-300 hover:bg-white focus:border-transparent focus:ring-2 focus:ring-neutral-400 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-800 dark:focus:ring-neutral-500 md:px-4 md:py-3 md:text-base"
                         placeholder="Tell me about your project..."
                         required
                       />
                     </div>
                     <Button
                       type="submit"
-                      disabled={status.type === 'loading'}
-                      className="w-full bg-gradient-to-r from-neutral-900 to-neutral-800 hover:from-neutral-800 hover:to-neutral-700
-                               dark:from-white dark:to-neutral-100 dark:hover:from-neutral-100 dark:hover:to-neutral-200
-                               text-white dark:text-neutral-900 py-2.5 md:py-3 text-sm md:text-base
-                               shadow-lg hover:shadow-xl transition-all duration-300 group rounded-xl
-                               disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={status.type === "loading"}
+                      className="group w-full rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 py-2.5 text-sm text-white shadow-lg transition-all duration-300 hover:from-neutral-800 hover:to-neutral-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 dark:from-white dark:to-neutral-100 dark:text-neutral-900 dark:hover:from-neutral-100 dark:hover:to-neutral-200 md:py-3 md:text-base"
                     >
-                      {status.type === 'loading' ? (
+                      {status.type === "loading" ? (
                         <>
-                          <div className="w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                           Sending...
                         </>
                       ) : (
                         <>
-                          <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform duration-200" />
+                          <Send className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                           Send Message
                         </>
                       )}
@@ -347,78 +317,56 @@ export default function ContactSection() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="space-y-6 md:space-y-8 order-1 lg:order-2"
+            className="order-1 space-y-6 lg:order-2 md:space-y-8"
           >
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-neutral-100/50 to-transparent 
-                            dark:from-neutral-800/30 dark:to-transparent rounded-3xl blur-2xl opacity-50" />
-              <div className="relative bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 
-                            border border-neutral-200/50 dark:border-neutral-700/50 shadow-xl">
-                <h3 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-neutral-900 dark:text-white">
-                  Get in touch
+              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-neutral-100/50 to-transparent opacity-50 blur-2xl dark:from-neutral-800/30 dark:to-transparent" />
+              <div className="relative rounded-2xl border border-neutral-200/50 bg-white/80 p-6 shadow-xl backdrop-blur-sm dark:border-neutral-700/50 dark:bg-neutral-800/80 md:p-8">
+                <h3 className="mb-4 text-xl font-semibold text-neutral-900 dark:text-white md:mb-6 md:text-2xl">
+                  {contact.introTitle}
                 </h3>
-                <p className="text-sm md:text-base text-neutral-600 dark:text-neutral-400 mb-6 md:mb-8 leading-relaxed">
-                  I&apos;m always open to discussing new opportunities, creative projects, 
-                  or just having a friendly chat about technology and development.
+                <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 md:text-base">
+                  {contact.introDescription}
                 </p>
               </div>
             </div>
 
             <div className="space-y-4 md:space-y-6">
-              {[
-                {
-                  icon: Mail,
-                  title: "Email",
-                  content: "vaibhavsh0120@gmail.com",
-                  href: "mailto:vaibhavsh0120@gmail.com",
-                  description: "Drop me a line anytime"
-                },
-                {
-                  icon: MapPin,
-                  title: "Location",
-                  content: "Delhi, India",
-                  href: "#",
-                  description: "Available for remote work"
-                }
-              ].map((contact, index) => (
-                <motion.a
-                  key={contact.title}
-                  href={contact.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="group block"
-                >
-                  <div className="relative">
-                    <div className="absolute -inset-2 bg-gradient-to-r from-neutral-200/30 to-neutral-300/30 
-                                  dark:from-neutral-700/30 dark:to-neutral-600/30 rounded-2xl blur-xl 
-                                  opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="relative flex items-center gap-3 md:gap-4 p-4 md:p-5 rounded-xl 
-                                  bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm
-                                  hover:bg-white dark:hover:bg-neutral-800 transition-all duration-300
-                                  border border-neutral-200/50 dark:border-neutral-700/50
-                                  shadow-lg hover:shadow-xl group-hover:-translate-y-1">
-                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-200 
-                                    dark:from-neutral-700 dark:to-neutral-600 flex items-center justify-center flex-shrink-0
-                                    group-hover:scale-110 transition-transform duration-300 shadow-md">
-                        <contact.icon className="w-5 h-5 md:w-6 md:h-6 text-neutral-600 dark:text-neutral-300" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-neutral-900 dark:text-white text-sm md:text-base mb-1">
-                          {contact.title}
-                        </h4>
-                        <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base font-medium mb-1">
-                          {contact.content}
-                        </p>
-                        <p className="text-neutral-500 dark:text-neutral-400 text-xs md:text-sm">
-                          {contact.description}
-                        </p>
+              {contact.details.map((detail, index) => {
+                const Icon = detailIcons[detail.title as keyof typeof detailIcons] ?? Mail
+
+                return (
+                  <motion.a
+                    key={`${detail.title}-${index}`}
+                    href={detail.href}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group block"
+                  >
+                    <div className="relative">
+                      <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-neutral-200/30 to-neutral-300/30 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100 dark:from-neutral-700/30 dark:to-neutral-600/30" />
+                      <div className="relative flex items-center gap-3 rounded-xl border border-neutral-200/50 bg-white/80 p-4 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-white group-hover:shadow-xl dark:border-neutral-700/50 dark:bg-neutral-800/80 dark:hover:bg-neutral-800 md:gap-4 md:p-5">
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-200 shadow-md transition-transform duration-300 group-hover:scale-110 dark:from-neutral-700 dark:to-neutral-600 md:h-14 md:w-14">
+                          <Icon className="h-5 w-5 text-neutral-600 dark:text-neutral-300 md:h-6 md:w-6" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="mb-1 text-sm font-semibold text-neutral-900 dark:text-white md:text-base">
+                            {detail.title}
+                          </h4>
+                          <p className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300 md:text-base">
+                            {detail.content}
+                          </p>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400 md:text-sm">
+                            {detail.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.a>
-              ))}
+                  </motion.a>
+                )
+              })}
             </div>
 
             <motion.div
@@ -428,22 +376,18 @@ export default function ContactSection() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="absolute -inset-4 bg-gradient-to-r from-neutral-100/50 to-transparent 
-                            dark:from-neutral-800/30 dark:to-transparent rounded-3xl blur-2xl opacity-50" />
-              <div className="relative bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 
-                            border border-neutral-200/50 dark:border-neutral-700/50 shadow-xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-200 
-                                dark:from-neutral-700 dark:to-neutral-600 flex items-center justify-center">
-                    <Clock className="w-5 h-5 md:w-6 md:h-6 text-neutral-600 dark:text-neutral-300" />
+              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-neutral-100/50 to-transparent opacity-50 blur-2xl dark:from-neutral-800/30 dark:to-transparent" />
+              <div className="relative rounded-2xl border border-neutral-200/50 bg-white/80 p-6 shadow-xl backdrop-blur-sm dark:border-neutral-700/50 dark:bg-neutral-800/80 md:p-8">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-700 dark:to-neutral-600 md:h-12 md:w-12">
+                    <Clock className="h-5 w-5 text-neutral-600 dark:text-neutral-300 md:h-6 md:w-6" />
                   </div>
-                  <h4 className="font-semibold text-neutral-900 dark:text-white text-sm md:text-base">
-                    Response Time
+                  <h4 className="text-sm font-semibold text-neutral-900 dark:text-white md:text-base">
+                    {contact.responseTimeTitle}
                   </h4>
                 </div>
-                <p className="text-neutral-600 dark:text-neutral-400 text-sm md:text-base leading-relaxed">
-                  I typically respond to emails within 24 hours. For project discussions, 
-                  feel free to reach out anytime.
+                <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 md:text-base">
+                  {contact.responseTimeDescription}
                 </p>
               </div>
             </motion.div>

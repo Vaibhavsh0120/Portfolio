@@ -1,8 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { Github, Linkedin, Mail } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
-import { Github, Linkedin, Mail } from 'lucide-react'
+import { HeroContent, ResumeVersion } from "@/lib/portfolio/types"
 
 function FloatingPaths({ position }: { position: number }) {
   const paths = Array.from({ length: 24 }, (_, i) => ({
@@ -19,7 +21,7 @@ function FloatingPaths({ position }: { position: number }) {
 
   return (
     <div className="absolute inset-0 pointer-events-none">
-      <svg className="w-full h-full text-slate-950 dark:text-white" viewBox="0 0 696 316" fill="none">
+      <svg className="h-full w-full text-slate-950 dark:text-white" viewBox="0 0 696 316" fill="none">
         <title>Background Paths</title>
         {paths.map((path) => (
           <motion.path
@@ -46,30 +48,48 @@ function FloatingPaths({ position }: { position: number }) {
   )
 }
 
-export default function HeroSection() {
-  const name = "Vaibhav Sharma"
-  const title = "Software Developer"
+function getSocialIcon(label: string, href: string) {
+  const key = `${label} ${href}`.toLowerCase()
+
+  if (key.includes("github")) {
+    return Github
+  }
+
+  if (key.includes("linkedin")) {
+    return Linkedin
+  }
+
+  return Mail
+}
+
+interface HeroSectionProps {
+  hero: HeroContent
+  currentResume: ResumeVersion
+}
+
+export default function HeroSection({ hero, currentResume }: HeroSectionProps) {
+  const { name, title, description, eyebrow, primaryButtonLabel, secondaryButtonLabel, socialLinks } = hero
 
   const scrollToProjects = () => {
-    const projectsSection = document.getElementById('projects')
+    const projectsSection = document.getElementById("projects")
     if (projectsSection) {
-      projectsSection.scrollIntoView({ behavior: 'smooth' })
+      projectsSection.scrollIntoView({ behavior: "smooth" })
     }
   }
 
   return (
-    <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
+    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
       <div className="absolute inset-0">
         <FloatingPaths position={1} />
         <FloatingPaths position={-1} />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 md:px-6 text-center">
+      <div className="relative z-10 container mx-auto px-4 text-center md:px-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2 }}
-          className="max-w-4xl mx-auto"
+          className="mx-auto max-w-4xl"
         >
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -77,12 +97,12 @@ export default function HeroSection() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="mb-4 md:mb-6"
           >
-            <span className="text-xs md:text-sm font-medium text-neutral-600 dark:text-neutral-400 tracking-wider uppercase">
-              Welcome to my portfolio
+            <span className="text-xs font-medium uppercase tracking-wider text-neutral-600 dark:text-neutral-400 md:text-sm">
+              {eyebrow}
             </span>
           </motion.div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-3 md:mb-4 tracking-tighter leading-tight">
+          <h1 className="mb-3 text-4xl font-bold leading-tight tracking-tighter sm:text-6xl md:mb-4 md:text-7xl lg:text-8xl">
             {name.split("").map((letter, index) => (
               <motion.span
                 key={index}
@@ -94,9 +114,7 @@ export default function HeroSection() {
                   stiffness: 150,
                   damping: 25,
                 }}
-                className="inline-block text-transparent bg-clip-text 
-                      bg-gradient-to-r from-neutral-900 to-neutral-700/80 
-                      dark:from-white dark:to-white/80"
+                className="inline-block bg-gradient-to-r from-neutral-900 to-neutral-700/80 bg-clip-text text-transparent dark:from-white dark:to-white/80"
               >
                 {letter === " " ? "\u00A0" : letter}
               </motion.span>
@@ -107,7 +125,7 @@ export default function HeroSection() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 1.5, duration: 0.8 }}
-            className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light mb-6 md:mb-8 text-neutral-600 dark:text-neutral-300"
+            className="mb-6 text-lg font-light text-neutral-600 dark:text-neutral-300 sm:text-xl md:mb-8 md:text-2xl lg:text-3xl"
           >
             {title}
           </motion.h2>
@@ -116,48 +134,37 @@ export default function HeroSection() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 1.8, duration: 0.8 }}
-            className="text-base md:text-lg text-neutral-600 dark:text-neutral-400 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed px-4 md:px-0"
+            className="mx-auto mb-8 max-w-2xl px-4 text-base leading-relaxed text-neutral-600 dark:text-neutral-400 md:mb-12 md:px-0 md:text-lg"
           >
-            BTech Computer Science student passionate about creating innovative software solutions. 
-            Currently building my expertise through hands-on projects and industry experience.
+            {description}
           </motion.p>
 
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 2.1, duration: 0.8 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-12 md:mb-16 px-4 md:px-0"
+            className="mb-12 flex flex-col items-center justify-center gap-3 px-4 md:mb-16 md:px-0 sm:flex-row md:gap-4"
           >
-            <div className="inline-block group relative bg-gradient-to-b from-black/10 to-white/10 
-                      dark:from-white/10 dark:to-black/10 p-px rounded-2xl backdrop-blur-lg 
-                      overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 w-full sm:w-auto">
+            <div className="group relative inline-block w-full overflow-hidden rounded-2xl bg-gradient-to-b from-black/10 to-white/10 p-px shadow-lg transition-shadow duration-300 hover:shadow-xl dark:from-white/10 dark:to-black/10 sm:w-auto">
               <Button
                 onClick={scrollToProjects}
                 variant="ghost"
-                className="rounded-[1.15rem] px-6 md:px-8 py-4 md:py-6 text-base md:text-lg font-semibold backdrop-blur-md 
-                      bg-white/95 hover:bg-white/100 dark:bg-black/95 dark:hover:bg-black/100 
-                      text-black dark:text-white transition-all duration-300 
-                      group-hover:-translate-y-0.5 border border-black/10 dark:border-white/10
-                      hover:shadow-md dark:hover:shadow-neutral-800/50 w-full sm:w-auto"
+                className="w-full rounded-[1.15rem] border border-black/10 bg-white/95 px-6 py-4 text-base font-semibold text-black backdrop-blur-md transition-all duration-300 group-hover:-translate-y-0.5 hover:bg-white/100 hover:shadow-md dark:border-white/10 dark:bg-black/95 dark:text-white dark:hover:bg-black/100 dark:hover:shadow-neutral-800/50 md:px-8 md:py-6 md:text-lg sm:w-auto"
               >
-                <span className="opacity-90 group-hover:opacity-100 transition-opacity">View My Work</span>
-                <span className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5 
-                            transition-all duration-300">
-                  →
+                <span className="opacity-90 transition-opacity group-hover:opacity-100">{primaryButtonLabel}</span>
+                <span className="ml-3 opacity-70 transition-all duration-300 group-hover:translate-x-1.5 group-hover:opacity-100">
+                  -&gt;
                 </span>
               </Button>
             </div>
 
             <Button
               variant="outline"
-              className="px-6 md:px-8 py-4 md:py-6 text-base md:text-lg font-medium rounded-2xl border-2 border-neutral-200 
-                    dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700
-                    bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-900/50
-                    transition-all duration-300 w-full sm:w-auto"
+              className="w-full rounded-2xl border-2 border-neutral-200 bg-transparent px-6 py-4 text-base font-medium transition-all duration-300 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-900/50 md:px-8 md:py-6 md:text-lg sm:w-auto"
               asChild
             >
-              <a href="/cv/Vaibhav_Sharma_Resume.pdf" download="Vaibhav_Sharma_Resume.pdf">
-                Download CV
+              <a href={currentResume.downloadUrl} download={currentResume.fileName}>
+                {secondaryButtonLabel}
               </a>
             </Button>
           </motion.div>
@@ -168,28 +175,24 @@ export default function HeroSection() {
             transition={{ delay: 2.4, duration: 0.8 }}
             className="flex items-center justify-center gap-4 md:gap-6"
           >
-            {[
-              { icon: Github, href: "https://github.com/Vaibhavsh0120", label: "GitHub" },
-              { icon: Linkedin, href: "https://www.linkedin.com/in/vaibhavsh0120", label: "LinkedIn" },
-              { icon: Mail, href: "mailto:vaibhavsh0120@gmail.com", label: "Email" },
-            ].map((social) => (
-              <motion.a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2.5 md:p-3 rounded-full bg-neutral-100 dark:bg-neutral-800 
-                      hover:bg-neutral-200 dark:hover:bg-neutral-700
-                      text-neutral-600 dark:text-neutral-400 
-                      hover:text-neutral-900 dark:hover:text-neutral-100
-                      transition-all duration-300 shadow-sm hover:shadow-md"
-                aria-label={social.label}
-              >
-                <social.icon size={18} className="md:w-5 md:h-5" />
-              </motion.a>
-            ))}
+            {socialLinks.map((social) => {
+              const Icon = getSocialIcon(social.label, social.href)
+
+              return (
+                <motion.a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="rounded-full bg-neutral-100 p-2.5 text-neutral-600 shadow-sm transition-all duration-300 hover:bg-neutral-200 hover:text-neutral-900 hover:shadow-md dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100 md:p-3"
+                  aria-label={social.label}
+                >
+                  <Icon size={18} className="md:h-5 md:w-5" />
+                </motion.a>
+              )
+            })}
           </motion.div>
         </motion.div>
       </div>
