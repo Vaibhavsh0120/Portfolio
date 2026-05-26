@@ -150,14 +150,14 @@ export default function ContactSection({ contact }: ContactSectionProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.55 }}
           viewport={{ once: true }}
           className="mb-12 text-center md:mb-16"
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.42 }}
             viewport={{ once: true }}
             className="mb-4 inline-block"
           >
@@ -178,7 +178,7 @@ export default function ContactSection({ contact }: ContactSectionProps) {
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.55 }}
             viewport={{ once: true }}
             className="order-2 lg:order-1"
           >
@@ -315,7 +315,7 @@ export default function ContactSection({ contact }: ContactSectionProps) {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.55 }}
             viewport={{ once: true }}
             className="order-1 space-y-6 lg:order-2 md:space-y-8"
           >
@@ -341,7 +341,7 @@ export default function ContactSection({ contact }: ContactSectionProps) {
                     href={detail.href}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    transition={{ duration: 0.5, delay: index * 0.06 }}
                     viewport={{ once: true }}
                     className="group block"
                   >
@@ -372,7 +372,7 @@ export default function ContactSection({ contact }: ContactSectionProps) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
               className="relative"
             >

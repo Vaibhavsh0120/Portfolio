@@ -52,14 +52,14 @@ export default function AboutSection({ about, experience }: AboutSectionProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.55 }}
           viewport={{ once: true }}
           className="mb-16 text-center md:mb-20"
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.42 }}
             viewport={{ once: true }}
             className="mb-4 inline-block"
           >
@@ -80,7 +80,7 @@ export default function AboutSection({ about, experience }: AboutSectionProps) {
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
             viewport={{ once: true, margin: "-100px" }}
             className="flex justify-center lg:col-span-2"
           >
@@ -96,7 +96,7 @@ export default function AboutSection({ about, experience }: AboutSectionProps) {
                     alt={about.imageAlt}
                     width={384}
                     height={512}
-                    className="h-full w-full object-cover object-center grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                    className="h-full w-full object-cover object-center transition-all duration-700 group-hover:scale-105"
                     priority
                     loading="eager"
                   />
@@ -110,7 +110,7 @@ export default function AboutSection({ about, experience }: AboutSectionProps) {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+            transition={{ duration: 0.45, ease: "easeOut", delay: 0.06 }}
             viewport={{ once: true, margin: "-100px" }}
             className="lg:col-span-3"
           >
@@ -136,7 +136,7 @@ export default function AboutSection({ about, experience }: AboutSectionProps) {
                         key={`${trait.title}-${index}`}
                         initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.2 + index * 0.08 }}
+                        transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
                         viewport={{ once: true, margin: "-50px" }}
                         className="group flex cursor-default items-start gap-4 rounded-xl border border-neutral-200/50 bg-white/60 p-4 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:border-neutral-700/50 dark:bg-neutral-800/60 dark:hover:bg-neutral-800/80"
                       >
@@ -163,17 +163,17 @@ export default function AboutSection({ about, experience }: AboutSectionProps) {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.55 }}
           viewport={{ once: true }}
         >
           <div className="mb-12 text-center md:mb-16">
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="mb-4 inline-block"
-            >
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.42 }}
+            viewport={{ once: true }}
+            className="mb-4 inline-block"
+          >
               <span className="rounded-full border border-neutral-300/20 bg-neutral-200/50 px-4 py-2 text-sm font-medium text-neutral-600 backdrop-blur-sm dark:border-neutral-700/20 dark:bg-neutral-800/50 dark:text-neutral-400">
                 {about.skillBadge}
               </span>
@@ -192,7 +192,7 @@ export default function AboutSection({ about, experience }: AboutSectionProps) {
                   key={`${skill.title}-${index}`}
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
+                  transition={{ duration: 0.55, delay: index * 0.12 }}
                   viewport={{ once: true }}
                   className="group"
                 >

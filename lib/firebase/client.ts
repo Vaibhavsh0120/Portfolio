@@ -1,6 +1,8 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { getAuth, GoogleAuthProvider } from "firebase/auth"
+import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
+
+import { adminEmails, isAuthorizedAdminEmail } from "@/lib/admin/config"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,17 +18,4 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
 export const db = getFirestore(app)
-export const googleProvider = new GoogleAuthProvider()
-
-export const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "vaibhavsh0120@gmail.com")
-  .split(",")
-  .map((email) => email.trim().toLowerCase())
-  .filter(Boolean)
-
-export function isAuthorizedAdminEmail(email: string | null | undefined) {
-  if (!email) {
-    return false
-  }
-
-  return adminEmails.includes(email.toLowerCase())
-}
+export { adminEmails, isAuthorizedAdminEmail }

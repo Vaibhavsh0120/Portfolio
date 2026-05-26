@@ -14,7 +14,7 @@ export default function ExperienceSection({ experience }: ExperienceSectionProps
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.55 }}
       viewport={{ once: true }}
       className="mb-16 md:mb-20"
     >
@@ -22,7 +22,7 @@ export default function ExperienceSection({ experience }: ExperienceSectionProps
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.42 }}
           viewport={{ once: true }}
           className="mb-4 inline-block"
         >
@@ -41,7 +41,7 @@ export default function ExperienceSection({ experience }: ExperienceSectionProps
             key={`${item.company}-${item.role}-${index}`}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.15 }}
+            transition={{ duration: 0.45, delay: index * 0.09 }}
             viewport={{ once: true }}
             className="relative"
           >

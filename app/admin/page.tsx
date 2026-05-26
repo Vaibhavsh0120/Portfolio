@@ -1,21 +1,23 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useTheme } from "next-themes"
 
 import {
-  createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithCustomToken,
   signInWithEmailAndPassword,
-  signInWithPopup,
   signOut,
   User,
 } from "firebase/auth"
 import { ArrowUpRight, FileText, ImagePlus, Loader2, LogOut, Save, ShieldCheck } from "lucide-react"
 import Image from "next/image"
+import { Mosaic } from "react-loading-indicators"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { adminEmails, auth, googleProvider, isAuthorizedAdminEmail } from "@/lib/firebase/client"
+import ThemeToggle from "@/components/theme-toggle"
+import { adminEmails, auth, isAuthorizedAdminEmail } from "@/lib/firebase/client"
 import {
   createResumeVersion,
   loadPortfolioBundle,
@@ -92,19 +94,31 @@ function describeSource(source: PortfolioBundleMeta["contentSource"]) {
 }
 
 export default function AdminPage() {
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme } = useTheme()
   const [user, setUser] = useState<User | null>(null)
   const [authReady, setAuthReady] = useState(false)
   const [loadingBundle, setLoadingBundle] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [requestingOtp, setRequestingOtp] = useState(false)
+  const [verifyingOtp, setVerifyingOtp] = useState(false)
+  const [otpRequested, setOtpRequested] = useState(false)
+  const [otpCode, setOtpCode] = useState("")
   const [status, setStatus] = useState<StatusState>({ type: "idle", message: "" })
   const [content, setContent] = useState<PortfolioContent>(emptyPortfolioContent)
   const [resumes, setResumes] = useState<ResumeVersion[]>([])
   const [bundleMeta, setBundleMeta] = useState<PortfolioBundleMeta>(defaultBundleMeta)
-  const [loginEmail, setLoginEmail] = useState(adminEmails[0] ?? "")
+  const [loginEmail, setLoginEmail] = useState("")
   const [loginPassword, setLoginPassword] = useState("")
   const [resumeLabel, setResumeLabel] = useState("Updated Resume")
   const [resumeNote, setResumeNote] = useState("")
   const [resumeFile, setResumeFile] = useState<File | null>(null)
+  const isDark = resolvedTheme === "dark"
+  const loaderColor = isDark ? "#f5f5f5" : "#171717"
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   async function refreshBundle(): Promise<{ content: PortfolioContent; resumes: ResumeVersion[]; meta: PortfolioBundleMeta } | null> {
     setLoadingBundle(true)
@@ -162,55 +176,87 @@ export default function AdminPage() {
       console.error(error)
       setStatus({
         type: "error",
-        message: "Email login failed. If the account does not exist yet, create it first or use Google.",
+        message: "Email login failed. Make sure the email/password account already exists in Firebase Authentication.",
       })
     }
   }
 
-  async function handleCreateAccount() {
+  async function handleRequestOtp() {
     setStatus({ type: "idle", message: "" })
-
-    if (!isAuthorizedAdminEmail(loginEmail)) {
-      setStatus({
-        type: "error",
-        message: `Only these admin emails are allowed here: ${adminEmails.join(", ")}`,
-      })
-      return
-    }
+    setRequestingOtp(true)
 
     try {
-      await createUserWithEmailAndPassword(auth, loginEmail.trim(), loginPassword)
+      const response = await fetch("/api/admin/request-otp", { method: "POST" })
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null
+
+      if (!response.ok) {
+        throw new Error(payload?.error ?? "Failed to send verification code.")
+      }
+
+      setOtpRequested(true)
       setStatus({
         type: "success",
-        message: "Admin email/password account created successfully.",
+        message: `A verification code was sent to ${adminEmails[0] ?? "your admin email"}.`,
       })
     } catch (error) {
       console.error(error)
       setStatus({
         type: "error",
-        message: "Could not create the admin email/password account. It may already exist.",
+        message: error instanceof Error ? error.message : "Failed to send verification code.",
       })
+    } finally {
+      setRequestingOtp(false)
     }
   }
 
-  async function handleGoogleSignIn() {
+  async function handleVerifyOtp() {
     setStatus({ type: "idle", message: "" })
+    setVerifyingOtp(true)
 
     try {
-      await signInWithPopup(auth, googleProvider)
+      const response = await fetch("/api/admin/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: otpCode }),
+      })
+
+      const payload = (await response.json().catch(() => null)) as { error?: string; customToken?: string } | null
+
+      if (!response.ok) {
+        throw new Error(payload?.error ?? "Failed to verify code.")
+      }
+
+      if (!payload?.customToken) {
+        throw new Error("No admin login token was returned.")
+      }
+
+      await signInWithCustomToken(auth, payload.customToken)
+      setOtpRequested(false)
+      setOtpCode("")
+      setStatus({
+        type: "success",
+        message: "Verification complete. Admin access granted.",
+      })
     } catch (error) {
       console.error(error)
       setStatus({
         type: "error",
-        message: "Google sign-in failed. Make sure the Google provider is enabled in Firebase Authentication.",
+        message: error instanceof Error ? error.message : "Failed to verify code.",
       })
+    } finally {
+      setVerifyingOtp(false)
     }
   }
-
   async function handleLogout() {
+    await fetch("/api/admin/logout", { method: "POST" }).catch(() => null)
     await signOut(auth)
+    setOtpRequested(false)
+    setOtpCode("")
     setStatus({ type: "info", message: "Signed out from the admin panel." })
   }
+
 
   async function handleSaveContent() {
     setSaving(true)
@@ -373,10 +419,18 @@ export default function AdminPage() {
 
   if (!authReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 dark:bg-neutral-950">
-        <div className="flex items-center gap-3 text-neutral-700 dark:text-neutral-300">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Preparing the CMS...</span>
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-neutral-100 px-4 dark:bg-neutral-950">
+        <ThemeToggle />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.08),transparent_30%),radial-gradient(circle_at_bottom,rgba(115,115,115,0.14),transparent_34%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.10),transparent_28%),radial-gradient(circle_at_bottom,rgba(255,255,255,0.05),transparent_34%)]" />
+        <div className="relative flex flex-col items-center gap-5 rounded-[2rem] border border-white/70 bg-white/75 px-10 py-9 text-neutral-700 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-neutral-900/70 dark:text-neutral-300 dark:shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+          {mounted ? (
+            <Mosaic color={loaderColor} size="large" text="" textColor="" />
+          ) : (
+            <div className="h-10 w-10 rounded-xl bg-neutral-200 dark:bg-neutral-800" />
+          )}
+          <span className="text-sm font-medium tracking-[0.22em] uppercase text-neutral-500 dark:text-neutral-400">
+            Preparing the CMS
+          </span>
         </div>
       </div>
     )
@@ -385,7 +439,8 @@ export default function AdminPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-neutral-50 px-4 py-12 dark:bg-neutral-950">
-        <div className="mx-auto max-w-xl">
+        <ThemeToggle />
+        <div className="mx-auto max-w-xl space-y-6">
           <Card className={secondaryCardClassName}>
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-3xl">
@@ -393,7 +448,7 @@ export default function AdminPage() {
                 Admin CMS
               </CardTitle>
               <CardDescription>
-                Login at <code>/admin</code> with your admin email/password or Google account.
+                Login at <code>/admin</code> with your admin email/password.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -401,7 +456,7 @@ export default function AdminPage() {
 
               <div className="space-y-3">
                 <div>
-                  <label className="mb-2 block text-sm font-medium">Admin Email</label>
+                  <label className="mb-2 block text-sm font-medium">Email</label>
                   <input
                     className={inputClassName}
                     value={loginEmail}
@@ -423,22 +478,47 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button onClick={handleEmailSignIn} className="rounded-xl">
-                  Sign In
-                </Button>
-                <Button onClick={handleCreateAccount} variant="outline" className="rounded-xl">
-                  Create Password Login
-                </Button>
+              <Button onClick={handleEmailSignIn} className="w-full rounded-xl">
+                Sign In
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className={secondaryCardClassName}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-3xl">
+                <ShieldCheck className="h-7 w-7" />
+                OTP Login
+              </CardTitle>
+              <CardDescription>
+                Send a one-time code to {adminEmails[0] ?? "your admin email"} and sign in without using the Firebase password.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <StatusBanner status={status} />
+
+              <div className="space-y-3">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Verification Code</label>
+                  <input
+                    className={inputClassName}
+                    value={otpCode}
+                    onChange={(event) => setOtpCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                    inputMode="numeric"
+                    placeholder="6-digit code"
+                  />
+                </div>
               </div>
 
-              <Button onClick={handleGoogleSignIn} variant="outline" className="w-full rounded-xl">
-                Continue With Google
-              </Button>
-
-              <div className="rounded-xl border border-neutral-200 bg-neutral-100/80 p-4 text-sm dark:border-neutral-800 dark:bg-neutral-900/70">
-                <p className="font-medium">Allowed admin emails</p>
-                <p className="mt-1 text-neutral-600 dark:text-neutral-400">{adminEmails.join(", ")}</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button onClick={handleRequestOtp} variant="outline" className="rounded-xl" disabled={requestingOtp}>
+                  {requestingOtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  {otpRequested ? "Resend Code" : "Send Code"}
+                </Button>
+                <Button onClick={handleVerifyOtp} className="rounded-xl" disabled={verifyingOtp || otpCode.length !== 6}>
+                  {verifyingOtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Verify Code
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -449,6 +529,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-neutral-50 px-4 py-8 dark:bg-neutral-950">
+      <ThemeToggle />
       <div className="mx-auto max-w-7xl space-y-6">
         <Card className={secondaryCardClassName}>
           <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -472,9 +553,13 @@ export default function AdminPage() {
           <CardContent className="space-y-4">
             <StatusBanner status={status} />
             {loadingBundle ? (
-              <div className="flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Loading content from Firebase...
+              <div className="flex items-center gap-4 rounded-2xl border border-neutral-200/70 bg-neutral-100/80 px-5 py-4 text-sm text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900/70 dark:text-neutral-300">
+                {mounted ? (
+                  <Mosaic color={loaderColor} size="small" text="" textColor="" />
+                ) : (
+                  <div className="h-6 w-6 rounded-lg bg-neutral-200 dark:bg-neutral-800" />
+                )}
+                <span className="font-medium">Loading content from Firebase...</span>
               </div>
             ) : null}
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -1884,3 +1969,6 @@ export default function AdminPage() {
     </div>
   )
 }
+
+
+

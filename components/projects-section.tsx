@@ -60,14 +60,14 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.55 }}
           viewport={{ once: true }}
           className="mb-12 text-center md:mb-16"
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.42 }}
             viewport={{ once: true }}
             className="mb-4 inline-block"
           >
@@ -90,7 +90,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
               key={`${project.title}-${index}`}
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
+              transition={{ duration: 0.55, delay: index * 0.12 }}
               viewport={{ once: true }}
               className={`grid items-center gap-8 md:gap-16 lg:grid-cols-2 ${
                 index % 2 === 1 ? "lg:grid-flow-col-dense" : ""
@@ -149,7 +149,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
                           key={`${technology}-${techIndex}`}
                           initial={{ opacity: 0, scale: 0.8 }}
                           whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.4, delay: techIndex * 0.1 }}
+                          transition={{ duration: 0.28, delay: techIndex * 0.06 }}
                           viewport={{ once: true }}
                           className="rounded-full border border-neutral-300/30 bg-gradient-to-r from-neutral-100 to-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-transform duration-200 hover:scale-105 dark:border-neutral-600/30 dark:from-neutral-800 dark:to-neutral-700 dark:text-neutral-300 md:text-sm"
                         >
@@ -190,17 +190,17 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.55 }}
           viewport={{ once: true }}
         >
           <div className="mb-12 text-center md:mb-16">
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="mb-4 inline-block"
-            >
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.42 }}
+            viewport={{ once: true }}
+            className="mb-4 inline-block"
+          >
               <span className="rounded-full border border-neutral-300/20 bg-neutral-200/50 px-4 py-2 text-sm font-medium text-neutral-600 backdrop-blur-sm dark:border-neutral-700/20 dark:bg-neutral-800/50 dark:text-neutral-400">
                 {projects.otherProjectsBadge}
               </span>
@@ -216,7 +216,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
                 key={`${project.title}-${index}`}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
+                transition={{ duration: 0.55, delay: index * 0.12 }}
                 viewport={{ once: true }}
                 className="group"
               >
