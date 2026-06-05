@@ -10,13 +10,18 @@ import {
   updateDoc,
   writeBatch,
 } from "firebase/firestore"
-import { auth, db } from "@/lib/firebase/client"
+import { getClientAuth, getClientDb } from "@/lib/firebase/client"
 
 import { emptyPortfolioContent, emptyResumeVersions } from "@/lib/portfolio/empty-content"
 import { PortfolioBundle, PortfolioContent, ResumeVersion } from "@/lib/portfolio/types"
 
-const portfolioDocRef = doc(db, "siteContent", "portfolio")
-const resumesCollectionRef = collection(db, "resumeVersions")
+function getPortfolioDocRef() {
+  return doc(getClientDb(), "siteContent", "portfolio")
+}
+
+function getResumesCollectionRef() {
+  return collection(getClientDb(), "resumeVersions")
+}
 
 function normalizePortfolioContent(data: Partial<PortfolioContent> | undefined): PortfolioContent {
   return {
@@ -63,6 +68,8 @@ function normalizeResumeVersion(data: Partial<ResumeVersion>, id?: string): Resu
 }
 
 export async function loadPortfolioBundle(): Promise<PortfolioBundle> {
+  const portfolioDocRef = getPortfolioDocRef()
+  const resumesCollectionRef = getResumesCollectionRef()
   const [contentSnapshot, resumesSnapshot] = await Promise.all([
     getDoc(portfolioDocRef),
     getDocs(query(resumesCollectionRef, orderBy("createdAtMs", "desc"))),
@@ -90,7 +97,7 @@ export async function loadPortfolioBundle(): Promise<PortfolioBundle> {
 
 export async function savePortfolioContent(content: PortfolioContent) {
   await setDoc(
-    portfolioDocRef,
+    getPortfolioDocRef(),
     {
       ...content,
       updatedAtMs: Date.now(),
@@ -101,7 +108,7 @@ export async function savePortfolioContent(content: PortfolioContent) {
 }
 
 export async function uploadPortfolioFile(file: File, storagePath: string) {
-  const currentUser = auth.currentUser
+  const currentUser = getClientAuth().currentUser
 
   if (!currentUser) {
     throw new Error("You must be signed in as an admin before uploading files.")
@@ -137,6 +144,8 @@ export async function uploadPortfolioFile(file: File, storagePath: string) {
 }
 
 export async function createResumeVersion(input: Omit<ResumeVersion, "id">) {
+  const db = getClientDb()
+  const resumesCollectionRef = getResumesCollectionRef()
   const snapshot = await getDocs(resumesCollectionRef)
   const batch = writeBatch(db)
 
@@ -159,6 +168,8 @@ export async function createResumeVersion(input: Omit<ResumeVersion, "id">) {
 }
 
 export async function setCurrentResume(resumeId: string) {
+  const db = getClientDb()
+  const resumesCollectionRef = getResumesCollectionRef()
   const snapshot = await getDocs(resumesCollectionRef)
   const batch = writeBatch(db)
 
@@ -170,5 +181,5 @@ export async function setCurrentResume(resumeId: string) {
 }
 
 export async function updateResumeVersion(resumeId: string, data: Partial<ResumeVersion>) {
-  await updateDoc(doc(db, "resumeVersions", resumeId), data)
+  await updateDoc(doc(getClientDb(), "resumeVersions", resumeId), data)
 }
