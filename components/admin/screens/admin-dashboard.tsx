@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   ArrowUpRight,
@@ -38,6 +39,37 @@ const navItems = [
 ]
 
 export function AdminDashboard({ cms }: { cms: AdminCmsController }) {
+  const [activeSection, setActiveSection] = useState(navItems[0].href.slice(1))
+
+  useEffect(() => {
+    const sectionIds = navItems.map((item) => item.href.slice(1))
+
+    const updateActiveSection = () => {
+      const activationOffset = 140
+      let activeId = sectionIds[0]
+
+      for (let index = sectionIds.length - 1; index >= 0; index -= 1) {
+        const section = document.getElementById(sectionIds[index])
+
+        if (section && section.getBoundingClientRect().top <= activationOffset) {
+          activeId = sectionIds[index]
+          break
+        }
+      }
+
+      setActiveSection(activeId)
+    }
+
+    updateActiveSection()
+    window.addEventListener("scroll", updateActiveSection, { passive: true })
+    window.addEventListener("resize", updateActiveSection)
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection)
+      window.removeEventListener("resize", updateActiveSection)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <ThemeToggle />
@@ -88,11 +120,20 @@ export function AdminDashboard({ cms }: { cms: AdminCmsController }) {
           <nav className="sticky top-24 space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon
+              const sectionId = item.href.slice(1)
+              const isActive = activeSection === sectionId
+
               return (
                 <a
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-50"
+                  aria-current={isActive ? "true" : undefined}
+                  onClick={() => setActiveSection(sectionId)}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                    isActive
+                      ? "bg-neutral-950 font-medium text-white shadow-sm dark:bg-neutral-50 dark:text-neutral-950"
+                      : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-50"
+                  }`}
                 >
                   <Icon className="h-4 w-4" />
                   {item.label}
