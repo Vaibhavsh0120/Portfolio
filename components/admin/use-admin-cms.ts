@@ -59,6 +59,15 @@ export function useAdminCms(): AdminCmsController {
   }, [])
 
   useEffect(() => {
+    if (status.message && !user) {
+      const timer = setTimeout(() => {
+        setStatus({ type: "idle", message: "" })
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [status, user])
+
+  useEffect(() => {
     if (!hasUnsavedChanges) {
       return
     }

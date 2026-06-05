@@ -1,6 +1,6 @@
 "use client";
 
-import { type ComponentType, type InputHTMLAttributes, type SVGProps, useState } from "react";
+import { type ComponentType, type InputHTMLAttributes, type SVGProps, useState, useRef } from "react";
 
 import type { AdminCmsController, StatusState } from "@/components/admin/admin-types";
 import ThemeToggle from "@/components/theme-toggle";
@@ -25,20 +25,17 @@ const styles = `
     background-image:
       radial-gradient(circle at 20% 20%, rgba(15,15,15,0.06) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(15,15,15,0.04) 0%, transparent 50%);
-    padding: 20px;
+    padding: 0;
   }
 
   /* ─── Main Container ─── */
   .alc-container {
     position: relative;
-    width: 860px;
-    height: 560px;
+    width: 100vw;
+    height: 100vh;
     background: #fff;
-    border-radius: 24px;
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,0.06),
-      0 32px 80px rgba(0,0,0,0.6),
-      0 8px 24px rgba(0,0,0,0.4);
+    border-radius: 0;
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -70,47 +67,59 @@ const styles = `
     visibility: visible;
   }
 
+  .alc-container.active .alc-form-box.password {
+    visibility: hidden;
+  }
+
   .alc-form-inner {
     width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
   }
 
   /* ─── Form Typography ─── */
   .alc-eyebrow {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #999;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    text-align: center;
   }
 
   .alc-form-box h2 {
-    font-size: 26px;
+    font-size: 36px;
     font-weight: 700;
     color: #0f0f0f;
     line-height: 1.2;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     letter-spacing: -0.02em;
+    text-align: center;
   }
 
   .alc-form-box .alc-subtitle {
-    font-size: 13px;
+    font-size: 16px;
     color: #888;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
     line-height: 1.5;
+    text-align: center;
   }
 
   /* ─── Input ─── */
   .alc-field {
     margin-bottom: 16px;
+    text-align: left;
   }
 
   .alc-field label {
     display: block;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     color: #555;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     letter-spacing: 0.02em;
   }
 
@@ -120,12 +129,12 @@ const styles = `
 
   .alc-input-wrap input {
     width: 100%;
-    height: 46px;
+    height: 52px;
     padding: 0 44px 0 16px;
     background: #f5f5f5;
     border: 1.5px solid #ebebeb;
-    border-radius: 10px;
-    font-size: 14px;
+    border-radius: 12px;
+    font-size: 16px;
     font-family: 'DM Sans', sans-serif;
     color: #0f0f0f;
     outline: none;
@@ -155,34 +164,37 @@ const styles = `
   }
 
   /* OTP code input special styling */
-  .alc-otp-input input {
+  .alc-otp-boxes {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .alc-otp-box {
+    width: 52px;
+    height: 64px;
     text-align: center;
     font-family: 'DM Mono', monospace;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: 500;
-    letter-spacing: 0.3em;
-    height: 52px;
     background: rgba(255,255,255,0.08);
     border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
     color: #fff;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.1s;
   }
 
-  .alc-otp-input input::placeholder {
-    color: rgba(255,255,255,0.25);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    font-weight: 400;
+  .alc-otp-box::placeholder {
+    color: rgba(255,255,255,0.2);
   }
 
-  .alc-otp-input input:focus {
-    border-color: rgba(255,255,255,0.45);
+  .alc-otp-box:focus {
+    border-color: rgba(255,255,255,0.5);
     background: rgba(255,255,255,0.12);
     box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
-  }
-
-  .alc-otp-input .alc-input-icon {
-    color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
   }
 
   /* Dark field labels (OTP panel) */
@@ -193,10 +205,10 @@ const styles = `
   /* ─── Buttons ─── */
   .alc-btn {
     width: 100%;
-    height: 46px;
+    height: 52px;
     border: none;
-    border-radius: 10px;
-    font-size: 14px;
+    border-radius: 12px;
+    font-size: 16px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 600;
     cursor: pointer;
@@ -327,52 +339,69 @@ const styles = `
   }
 
   .alc-toggle-panel h3 {
-    font-size: 26px;
+    font-size: 36px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
   .alc-toggle-panel p {
-    font-size: 13.5px;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 28px;
+    font-size: 16px;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 36px;
     line-height: 1.6;
-    max-width: 220px;
+    max-width: 300px;
   }
 
   /* Toggle switch button */
   .alc-toggle-btn {
-    height: 44px;
-    padding: 0 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 52px;
+    padding: 0 36px;
     background: transparent;
-    border: 1.5px solid rgba(255,255,255,0.35);
+    border: 1.5px solid rgba(255,255,255,0.25);
     border-radius: 100px;
     color: #fff;
-    font-size: 13px;
+    font-size: 16px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 600;
     cursor: pointer;
     letter-spacing: 0.02em;
-    transition: background 0.2s, border-color 0.2s;
+    transition: all 0.3s ease;
   }
 
   .alc-toggle-btn:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.6);
+    background: #fff;
+    color: #0f0f0f;
+    border-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .alc-toggle-btn:active {
+    transform: translateY(0);
   }
 
   /* ─── Badge ─── */
+  .alc-badge-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
   .alc-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 100px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.04em;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .alc-badge-dark {
@@ -477,10 +506,7 @@ const styles = `
 
   .dark .alc-container {
     background: #0f0f0f;
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,0.08),
-      0 32px 80px rgba(0,0,0,0.72),
-      0 8px 24px rgba(0,0,0,0.5);
+    box-shadow: none;
   }
 
   .dark .alc-form-box,
@@ -510,26 +536,25 @@ const styles = `
   }
 
   .dark .alc-input-wrap input,
-  .dark .alc-otp-input input {
+  .dark .alc-otp-box {
     background: #171717;
     border-color: #2f2f2f;
     color: #f5f5f5;
   }
 
   .dark .alc-input-wrap input::placeholder,
-  .dark .alc-otp-input input::placeholder {
+  .dark .alc-otp-box::placeholder {
     color: rgba(245,245,245,0.34);
   }
 
   .dark .alc-input-wrap input:focus,
-  .dark .alc-otp-input input:focus {
+  .dark .alc-otp-box:focus {
     background: #111;
     border-color: #737373;
     box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
   }
 
-  .dark .alc-input-icon,
-  .dark .alc-otp-input .alc-input-icon {
+  .dark .alc-input-icon {
     color: rgba(245,245,245,0.4);
   }
 
@@ -615,9 +640,9 @@ const styles = `
   /* ─── Responsive ─── */
   @media (max-width: 680px) {
     .alc-container {
-      height: calc(100dvh - 40px);
+      height: 100dvh;
       width: 100%;
-      border-radius: 20px;
+      border-radius: 0;
     }
 
     .alc-form-box {
@@ -849,6 +874,82 @@ function InputField({
   );
 }
 
+function OtpCodeInput({ value, onChange }: { value: string, onChange: (val: string) => void }) {
+  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const val = e.target.value;
+    if (/[^0-9]/.test(val) && val !== "") return;
+
+    // Detect if the user pasted a long string
+    if (val.length > 1) {
+      // If the value length increased by more than 1, it's a paste
+      if (val.length - (chars[index] !== " " ? 1 : 0) > 1) {
+        const pasted = val.replace(/\D/g, "").slice(0, 6);
+        onChange(pasted);
+        if (pasted.length === 6) {
+          inputs.current[5]?.focus();
+          setTimeout(() => document.getElementById("verify-otp-btn")?.click(), 100);
+        } else {
+          inputs.current[pasted.length]?.focus();
+        }
+        return;
+      }
+    }
+
+    const singleChar = val.slice(-1);
+    const newValue = value.padEnd(6, " ").split("");
+    newValue[index] = singleChar === "" ? " " : singleChar;
+    
+    const nextVal = newValue.join("").trimEnd();
+    onChange(nextVal);
+
+    if (singleChar && index < 5) {
+      inputs.current[index + 1]?.focus();
+    }
+    
+    if (nextVal.length === 6 && singleChar) {
+      setTimeout(() => document.getElementById("verify-otp-btn")?.click(), 100);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Backspace") {
+      if (!value[index] && index > 0) {
+        inputs.current[index - 1]?.focus();
+        const newValue = value.split("");
+        newValue[index - 1] = "";
+        onChange(newValue.join(""));
+      } else if (value[index]) {
+        const newValue = value.split("");
+        newValue[index] = "";
+        onChange(newValue.join(""));
+      }
+    }
+  };
+
+  const chars = value.padEnd(6, " ").split("");
+
+  return (
+    <div className="alc-otp-boxes">
+      {[0, 1, 2, 3, 4, 5].map((index) => (
+        <input
+          key={index}
+          ref={(el) => { inputs.current[index] = el; }}
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          value={chars[index] !== " " ? chars[index] : ""}
+          onChange={(e) => handleChange(e, index)}
+          onKeyDown={(e) => handleKeyDown(e, index)}
+          className="alc-otp-box"
+          placeholder="-"
+        />
+      ))}
+    </div>
+  );
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function AdminLoginForm({
@@ -889,9 +990,11 @@ export default function AdminLoginForm({
           {/* ── OTP Form (left, hidden by default) ─────────────────── */}
           <div className="alc-form-box otp">
             <div className="alc-form-inner">
-              <div className="alc-badge alc-badge-dark">
-                <IconHash style={{ width: 11, height: 11 }} />
-                One-Time Code
+              <div className="alc-badge-wrap">
+                <div className="alc-badge alc-badge-dark">
+                  <IconHash style={{ width: 11, height: 11 }} />
+                  One-Time Code
+                </div>
               </div>
               <p className="alc-eyebrow">Passwordless</p>
               <h2>Verify with a code.</h2>
@@ -900,18 +1003,13 @@ export default function AdminLoginForm({
                 <span style={{ color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>{adminEmail}</span>
               </p>
 
-              <InputField
-                className="alc-otp-input"
-                label="Verification Code"
-                type="text"
-                placeholder="6-digit code"
-                value={otpCode}
-                onChange={onOtpChange || (() => {})}
-                icon={IconKey}
-                autoComplete="one-time-code"
-                inputMode="numeric"
-                maxLength={6}
-              />
+              <div className="alc-field" style={{ textAlign: "center" }}>
+                <label>Verification Code</label>
+                <OtpCodeInput 
+                  value={otpCode}
+                  onChange={onOtpChange || (() => {})}
+                />
+              </div>
 
               <div className="alc-btn-row">
                 <button
@@ -926,6 +1024,7 @@ export default function AdminLoginForm({
                   {otpRequested ? "Resend" : "Send Code"}
                 </button>
                 <button
+                  id="verify-otp-btn"
                   className="alc-btn alc-btn-white"
                   type="button"
                   onClick={onVerifyOtp}
@@ -943,9 +1042,11 @@ export default function AdminLoginForm({
           {/* ── Password Form (right, shown by default) ─────────────── */}
           <div className="alc-form-box password">
             <div className="alc-form-inner">
-              <div className="alc-badge alc-badge-light">
-                <IconShield style={{ width: 11, height: 11 }} />
-                Admin Access
+              <div className="alc-badge-wrap">
+                <div className="alc-badge alc-badge-light">
+                  <IconShield style={{ width: 11, height: 11 }} />
+                  Admin Access
+                </div>
               </div>
               <p className="alc-eyebrow">Secure Login</p>
               <h2>Sign in with your password.</h2>
@@ -1000,8 +1101,9 @@ export default function AdminLoginForm({
           <div className="alc-toggle-box">
             {/* Left panel — shown when password form is active (default) */}
             <div className="alc-toggle-panel left">
+              <p className="alc-eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>Fast & Secure</p>
               <h3>No password?</h3>
-              <p>Use a one-time code sent to your configured admin email.</p>
+              <p>Use a one-time code sent directly to your configured admin email.</p>
               <button className="alc-toggle-btn" type="button" onClick={() => setActive(true)}>
                 Use OTP instead
               </button>
@@ -1009,8 +1111,9 @@ export default function AdminLoginForm({
 
             {/* Right panel — shown when OTP form is active */}
             <div className="alc-toggle-panel right">
-              <h3>Have your password?</h3>
-              <p>Sign in directly with your admin email and password.</p>
+              <p className="alc-eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>Standard Login</p>
+              <h3>Have a password?</h3>
+              <p>Sign in directly with your admin email and registered password.</p>
               <button className="alc-toggle-btn" type="button" onClick={() => setActive(false)}>
                 Use Password
               </button>
@@ -1018,10 +1121,11 @@ export default function AdminLoginForm({
           </div>
 
           {/* ── Status Bar ───────────────────────────────────────────── */}
-          <div className={`alc-status ${status.type || "idle"}`}>
-            {status.type === "loading" && <span className="alc-spinner" />}
-            {status.message || "Ready — choose a login method."}
-          </div>
+          {status.message && (
+            <div className={`alc-status ${status.type || "idle"}`}>
+              {status.message}
+            </div>
+          )}
 
         </div>
       </div>
