@@ -15,12 +15,14 @@ const styles = `
     box-sizing: border-box;
   }
 
+  /* ─── Root ─── */
   .alc-root {
     font-family: 'DM Sans', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    min-height: 100dvh;
     background: #f4f4f5;
     background-image:
       radial-gradient(circle at 20% 20%, rgba(15,15,15,0.06) 0%, transparent 50%),
@@ -33,13 +35,14 @@ const styles = `
     position: relative;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background: #fff;
     border-radius: 0;
     box-shadow: none;
     overflow: hidden;
   }
 
-  /* ─── Form Boxes ─── */
+  /* ─── Desktop: Form Boxes side by side ─── */
   .alc-form-box {
     position: absolute;
     top: 0;
@@ -49,6 +52,7 @@ const styles = `
     background: #fff;
     display: flex;
     align-items: center;
+    justify-content: center;
     color: #1a1a1a;
     padding: 44px 40px;
     z-index: 1;
@@ -224,7 +228,6 @@ const styles = `
     transform: scale(0.98);
   }
 
-  /* Primary dark button (password panel) */
   .alc-btn-primary {
     background: #0f0f0f;
     color: #fff;
@@ -242,7 +245,6 @@ const styles = `
     cursor: not-allowed;
   }
 
-  /* Ghost button (OTP panel — send code) */
   .alc-btn-ghost {
     background: #f5f5f5;
     color: #0f0f0f;
@@ -253,7 +255,6 @@ const styles = `
     background: #ebebeb;
   }
 
-  /* Dark verify button (OTP panel) */
   .alc-btn-white {
     background: #0f0f0f;
     color: #fff;
@@ -283,6 +284,7 @@ const styles = `
     pointer-events: none;
   }
 
+  /* Desktop blob slides left→right */
   .alc-toggle-box::before {
     content: '';
     position: absolute;
@@ -430,33 +432,11 @@ const styles = `
     transition: background 0.3s;
   }
 
-  .alc-status.idle {
-    background: #fafafa;
-    color: #999;
-  }
-
-  .alc-status.error {
-    background: #fff5f5;
-    color: #c0392b;
-    border-top-color: #ffd5d5;
-  }
-
-  .alc-status.success {
-    background: #f0fff4;
-    color: #27ae60;
-    border-top-color: #c3f0cc;
-  }
-
-  .alc-status.info {
-    background: #eff6ff;
-    color: #2563eb;
-    border-top-color: #bfdbfe;
-  }
-
-  .alc-status.loading {
-    background: #fafafa;
-    color: #888;
-  }
+  .alc-status.idle   { background: #fafafa; color: #999; }
+  .alc-status.error  { background: #fff5f5; color: #c0392b; border-top-color: #ffd5d5; }
+  .alc-status.success{ background: #f0fff4; color: #27ae60; border-top-color: #c3f0cc; }
+  .alc-status.info   { background: #eff6ff; color: #2563eb; border-top-color: #bfdbfe; }
+  .alc-status.loading{ background: #fafafa; color: #888; }
 
   /* ─── Forgot Password ─── */
   .alc-forgot {
@@ -471,9 +451,7 @@ const styles = `
     transition: color 0.2s;
   }
 
-  .alc-forgot a:hover {
-    color: #0f0f0f;
-  }
+  .alc-forgot a:hover { color: #0f0f0f; }
 
   /* ─── OTP panel: light theme base ─── */
   .alc-form-box.otp {
@@ -481,16 +459,14 @@ const styles = `
     color: #1a1a1a;
   }
 
-  .alc-form-box.otp .alc-eyebrow {
-    color: #999;
-  }
+  .alc-form-box.otp .alc-eyebrow { color: #999; }
+  .alc-form-box.otp h2           { color: #0f0f0f; }
+  .alc-form-box.otp .alc-subtitle{ color: #888; }
 
-  .alc-form-box.otp h2 {
-    color: #0f0f0f;
-  }
-
-  .alc-form-box.otp .alc-subtitle {
-    color: #888;
+  /* ─── OTP subtitle email color fix (light mode) ─── */
+  .alc-form-box.otp .alc-subtitle span {
+    color: #444;
+    font-weight: 500;
   }
 
   /* ─── Dark mode ─── */
@@ -501,10 +477,7 @@ const styles = `
       radial-gradient(circle at 80% 80%, rgba(255,255,255,0.025) 0%, transparent 50%);
   }
 
-  .dark .alc-container {
-    background: #0f0f0f;
-    box-shadow: none;
-  }
+  .dark .alc-container { background: #0f0f0f; }
 
   .dark .alc-form-box,
   .dark .alc-form-box.otp {
@@ -513,24 +486,16 @@ const styles = `
   }
 
   .dark .alc-form-box h2,
-  .dark .alc-form-box.otp h2 {
-    color: #f5f5f5;
-  }
+  .dark .alc-form-box.otp h2 { color: #f5f5f5; }
 
   .dark .alc-form-box .alc-subtitle,
-  .dark .alc-form-box.otp .alc-subtitle {
-    color: rgba(245,245,245,0.58);
-  }
+  .dark .alc-form-box.otp .alc-subtitle { color: rgba(245,245,245,0.58); }
 
   .dark .alc-eyebrow,
-  .dark .alc-form-box.otp .alc-eyebrow {
-    color: rgba(245,245,245,0.42);
-  }
+  .dark .alc-form-box.otp .alc-eyebrow { color: rgba(245,245,245,0.42); }
 
   .dark .alc-field label,
-  .dark .alc-form-box.otp .alc-field label {
-    color: rgba(245,245,245,0.66);
-  }
+  .dark .alc-form-box.otp .alc-field label { color: rgba(245,245,245,0.66); }
 
   .dark .alc-input-wrap input {
     background: #171717;
@@ -538,9 +503,7 @@ const styles = `
     color: #f5f5f5;
   }
 
-  .dark .alc-input-wrap input::placeholder {
-    color: rgba(245,245,245,0.34);
-  }
+  .dark .alc-input-wrap input::placeholder { color: rgba(245,245,245,0.34); }
 
   .dark .alc-input-wrap input:focus {
     background: #111;
@@ -554,9 +517,7 @@ const styles = `
     color: #f5f5f5;
   }
 
-  .dark .alc-otp-box::placeholder {
-    color: rgba(245,245,245,0.34);
-  }
+  .dark .alc-otp-box::placeholder { color: rgba(245,245,245,0.34); }
 
   .dark .alc-otp-box:focus {
     background: #111;
@@ -564,9 +525,7 @@ const styles = `
     box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
   }
 
-  .dark .alc-input-icon {
-    color: rgba(245,245,245,0.4);
-  }
+  .dark .alc-input-icon { color: rgba(245,245,245,0.4); }
 
   .dark .alc-badge-light,
   .dark .alc-badge-dark {
@@ -584,67 +543,34 @@ const styles = `
   }
 
   .dark .alc-btn-primary:hover:not(:disabled),
-  .dark .alc-btn-white:hover:not(:disabled) {
-    background: #e0e0e0;
-  }
+  .dark .alc-btn-white:hover:not(:disabled) { background: #e0e0e0; }
 
   .dark .alc-btn-ghost {
     background: #171717;
     border: 1.5px solid #2f2f2f;
     color: #f5f5f5;
-    box-shadow: none;
   }
 
-  .dark .alc-btn-ghost:hover:not(:disabled) {
-    background: #242424;
-  }
+  .dark .alc-btn-ghost:hover:not(:disabled) { background: #242424; }
 
-  .dark .alc-toggle-box::before {
-    background: #050505;
-  }
+  .dark .alc-toggle-box::before { background: #050505; }
+  .dark .alc-toggle-panel       { color: #f5f5f5; }
+  .dark .alc-toggle-panel p     { color: rgba(245,245,245,0.58); }
+  .dark .alc-toggle-btn         { border-color: rgba(245,245,245,0.26); color: #f5f5f5; }
 
-  .dark .alc-toggle-panel {
-    color: #f5f5f5;
-  }
-
-  .dark .alc-toggle-panel p {
-    color: rgba(245,245,245,0.58);
-  }
-
-  .dark .alc-toggle-btn {
-    border-color: rgba(245,245,245,0.26);
-    color: #f5f5f5;
-  }
+  .dark .alc-form-box.otp .alc-subtitle span { color: rgba(245,245,245,0.75); }
 
   .dark .alc-status.idle,
-  .dark .alc-status.loading {
-    background: #111;
-    color: rgba(245,245,245,0.58);
-    border-top-color: #262626;
-  }
+  .dark .alc-status.loading { background: #111; color: rgba(245,245,245,0.58); border-top-color: #262626; }
+  .dark .alc-status.error   { background: #210909; color: #fca5a5; border-top-color: #451a1a; }
+  .dark .alc-status.success { background: #052e16; color: #86efac; border-top-color: #14532d; }
+  .dark .alc-status.info    { background: #082f49; color: #7dd3fc; border-top-color: #075985; }
 
-  .dark .alc-status.error {
-    background: #210909;
-    color: #fca5a5;
-    border-top-color: #451a1a;
-  }
-
-  .dark .alc-status.success {
-    background: #052e16;
-    color: #86efac;
-    border-top-color: #14532d;
-  }
-
-  .dark .alc-status.info {
-    background: #082f49;
-    color: #7dd3fc;
-    border-top-color: #075985;
-  }
+  .dark .alc-forgot a       { color: rgba(245,245,245,0.4); }
+  .dark .alc-forgot a:hover { color: #f5f5f5; }
 
   /* ─── Loader spinner ─── */
-  @keyframes alc-spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes alc-spin { to { transform: rotate(360deg); } }
 
   .alc-spinner {
     width: 15px;
@@ -656,23 +582,90 @@ const styles = `
     flex-shrink: 0;
   }
 
-  /* ─── Responsive ─── */
+  /* ══════════════════════════════════════════════════════
+     MOBILE  ≤ 680px  (iPhone SE → iPhone Pro Max)
+     Layout: black toggle band 30% top or bottom,
+     white form panel 70%.
+     Both black panels: content perfectly centered.
+  ══════════════════════════════════════════════════════ */
   @media (max-width: 680px) {
+
     .alc-container {
       height: 100dvh;
       width: 100%;
-      border-radius: 0;
     }
 
+    /* ── Both toggle panels: same height, centered content ── */
+    .alc-toggle-panel {
+      width: 100%;
+      height: 30%;
+      /* Uniform padding on all sides — safe area handled per-panel */
+      padding: 0 32px;
+      /* Content perfectly centered vertically */
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Top panel: account for notch / Dynamic Island */
+    .alc-toggle-panel.left {
+      padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+    }
+
+    /* Bottom panel: account for home indicator */
+    .alc-toggle-panel.right {
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+    }
+
+    /* Eyebrow visible, compact */
+    .alc-toggle-panel .alc-eyebrow {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      margin-bottom: 0;
+    }
+
+    .alc-toggle-panel h3 {
+      font-size: 26px;
+      margin-bottom: 0;
+      line-height: 1.15;
+    }
+
+    /* Show description — panel is tall enough now */
+    .alc-toggle-panel p {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 0;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.6);
+      max-width: 260px;
+      text-align: center;
+    }
+
+    .alc-toggle-btn {
+      height: 44px;
+      padding: 0 28px;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* ── Form panel: fills 70%, perfectly centered ── */
     .alc-form-box {
       bottom: 0;
       top: auto;
       right: 0;
       width: 100%;
       height: 70%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 28px;
+      padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+      overflow-y: auto;
       transition: bottom 0.6s ease-in-out 1.2s, visibility 0s 1s;
     }
 
+    /* When OTP panel is active, both forms slide up 30% */
     .alc-container.active .alc-form-box {
       right: 0;
       bottom: 30%;
@@ -690,6 +683,70 @@ const styles = `
       visibility: hidden;
     }
 
+    /* ── Typography scale-down ── */
+    .alc-form-box h2 {
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .alc-form-box .alc-subtitle {
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .alc-badge {
+      margin-bottom: 12px;
+      font-size: 12px;
+      padding: 5px 12px;
+    }
+
+    .alc-eyebrow {
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+
+    /* ── Input scale-down ── */
+    .alc-field {
+      margin-bottom: 10px;
+    }
+
+    .alc-field label {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .alc-input-wrap input {
+      height: 48px;
+      font-size: 16px; /* keep 16px to prevent iOS zoom on focus */
+      border-radius: 10px;
+    }
+
+    /* ── Button scale-down ── */
+    .alc-btn {
+      height: 48px;
+      font-size: 15px;
+      border-radius: 10px;
+    }
+
+    .alc-btn-primary {
+      margin-top: 6px;
+    }
+
+    /* ── OTP boxes ── */
+    .alc-otp-box {
+      width: 44px;
+      height: 56px;
+      font-size: 24px;
+      border-radius: 10px;
+    }
+
+    .alc-otp-boxes {
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    /* ── Blob: slides on top axis ── */
     .alc-toggle-box::before {
       left: 0;
       top: -270%;
@@ -704,30 +761,35 @@ const styles = `
       top: 70%;
     }
 
-    .alc-toggle-panel {
-      width: 100%;
-      height: 30%;
-    }
-
+    /* ── Left toggle panel (default — sits at top) ── */
     .alc-toggle-panel.left {
       top: 0;
       left: 0;
+      right: auto;
+      bottom: auto;
+      transition: top 0.6s ease-in-out;
       transition-delay: 1.2s;
     }
 
     .alc-container.active .alc-toggle-panel.left {
-      left: 0;
       top: -30%;
+      left: 0;
       transition-delay: 0.6s;
     }
 
+    /* ── Right toggle panel (OTP active — slides up from below) ── */
     .alc-toggle-panel.right {
       right: 0;
-      bottom: -30%;
+      left: 0;
       top: auto;
-      left: auto;
+      bottom: -30%;
+      width: 100%;
       transition: bottom 0.6s ease-in-out;
       transition-delay: 0.6s;
+      /* Reset the directional overrides from previous version */
+      justify-content: center;
+      padding-top: 0;
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
     }
 
     .alc-container.active .alc-toggle-panel.right {
@@ -737,6 +799,91 @@ const styles = `
 
     .alc-status {
       padding: 10px 20px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     SMALL PHONES  ≤ 390px  (iPhone SE, older Androids)
+  ══════════════════════════════════════════════════════ */
+  @media (max-width: 390px) {
+    .alc-toggle-panel {
+      height: 28%;
+    }
+
+    .alc-form-box {
+      height: 72%;
+      padding: 20px 20px;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .alc-container.active .alc-form-box,
+    .alc-container.active .alc-form-box.otp {
+      bottom: 28%;
+    }
+
+    .alc-container.active .alc-toggle-box::before { top: 72%; }
+
+    .alc-container.active .alc-toggle-panel.left  { top: -28%; }
+    .alc-toggle-panel.right                        { bottom: -28%; }
+
+    .alc-form-box h2    { font-size: 22px; }
+    .alc-badge          { margin-bottom: 8px; }
+    .alc-field          { margin-bottom: 8px; }
+
+    .alc-otp-box {
+      width: 38px;
+      height: 50px;
+      font-size: 20px;
+    }
+
+    .alc-otp-boxes { gap: 4px; }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TABLET  681px – 1024px  (iPad mini → iPad Pro 11")
+     Keep the two-panel desktop layout but boost padding
+     and font sizes for the larger canvas.
+  ══════════════════════════════════════════════════════ */
+  @media (min-width: 681px) and (max-width: 1024px) {
+    .alc-form-box {
+      padding: 48px 44px;
+    }
+
+    .alc-form-box h2 {
+      font-size: 32px;
+    }
+
+    .alc-form-inner {
+      max-width: 340px;
+    }
+
+    .alc-toggle-panel {
+      padding: 48px 36px;
+    }
+
+    .alc-toggle-panel h3 {
+      font-size: 30px;
+    }
+
+    .alc-toggle-panel p {
+      font-size: 15px;
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     DESKTOP / MACBOOK  ≥ 1025px
+     Already handled by base styles above; just ensure
+     comfortable max-width so lines don't stretch on
+     large iMac / 4K displays.
+  ══════════════════════════════════════════════════════ */
+  @media (min-width: 1025px) {
+    .alc-form-inner {
+      max-width: 400px;
+    }
+
+    .alc-toggle-panel {
+      padding: 60px 48px;
     }
   }
 `;
@@ -904,9 +1051,7 @@ function OtpCodeInput({ value, onChange }: { value: string, onChange: (val: stri
     const val = e.target.value;
     if (/[^0-9]/.test(val) && val !== "") return;
 
-    // Detect if the user pasted a long string
     if (val.length > 1) {
-      // If the value length increased by more than 1, it's a paste
       if (val.length - (chars[index] !== " " ? 1 : 0) > 1) {
         const pasted = val.replace(/\D/g, "").slice(0, 6);
         onChange(pasted);
@@ -923,14 +1068,14 @@ function OtpCodeInput({ value, onChange }: { value: string, onChange: (val: stri
     const singleChar = val.slice(-1);
     const newValue = value.padEnd(6, " ").split("");
     newValue[index] = singleChar === "" ? " " : singleChar;
-    
+
     const nextVal = newValue.join("").trimEnd();
     onChange(nextVal);
 
     if (singleChar && index < 5) {
       inputs.current[index + 1]?.focus();
     }
-    
+
     if (nextVal.length === 6 && singleChar) {
       setTimeout(() => document.getElementById("verify-otp-btn")?.click(), 100);
     }
@@ -976,7 +1121,6 @@ function OtpCodeInput({ value, onChange }: { value: string, onChange: (val: stri
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function AdminLoginForm({
-  // OTP props
   otpCode = "",
   onOtpChange,
   onSendCode,
@@ -985,19 +1129,13 @@ export default function AdminLoginForm({
   requestingOtp = false,
   verifyingOtp = false,
   adminEmail = "admin@example.com",
-
-  // Password props
   loginEmail = "",
   onEmailChange,
   loginPassword = "",
   onPasswordChange,
   onPasswordSignIn,
   signingIn = false,
-
-  // Status
   status = { type: "idle", message: "" },
-
-  // Forgot password
   onForgotPassword,
 }: AdminLoginFormProps) {
   const [active, setActive] = useState(false);
@@ -1010,7 +1148,7 @@ export default function AdminLoginForm({
       <div className="alc-root">
         <div className={`alc-container${active ? " active" : ""}`}>
 
-          {/* ── OTP Form (left, hidden by default) ─────────────────── */}
+          {/* ── OTP Form ─────────────────────────────────────────────── */}
           <div className="alc-form-box otp">
             <div className="alc-form-inner">
               <div className="alc-badge-wrap">
@@ -1023,12 +1161,12 @@ export default function AdminLoginForm({
               <h2>Verify with a code.</h2>
               <p className="alc-subtitle">
                 A 6-digit code will be sent to<br />
-                <span style={{ color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>{adminEmail}</span>
+                <span>{adminEmail}</span>
               </p>
 
               <div className="alc-field" style={{ textAlign: "center" }}>
                 <label>Verification Code</label>
-                <OtpCodeInput 
+                <OtpCodeInput
                   value={otpCode}
                   onChange={onOtpChange || (() => {})}
                 />
@@ -1062,7 +1200,7 @@ export default function AdminLoginForm({
             </div>
           </div>
 
-          {/* ── Password Form (right, shown by default) ─────────────── */}
+          {/* ── Password Form ─────────────────────────────────────────── */}
           <div className="alc-form-box password">
             <div className="alc-form-inner">
               <div className="alc-badge-wrap">
@@ -1120,9 +1258,8 @@ export default function AdminLoginForm({
             </div>
           </div>
 
-          {/* ── Toggle Panels (sliding overlay) ──────────────────────── */}
+          {/* ── Toggle Panels ─────────────────────────────────────────── */}
           <div className="alc-toggle-box">
-            {/* Left panel — shown when password form is active (default) */}
             <div className="alc-toggle-panel left">
               <p className="alc-eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>Fast & Secure</p>
               <h3>No password?</h3>
@@ -1132,7 +1269,6 @@ export default function AdminLoginForm({
               </button>
             </div>
 
-            {/* Right panel — shown when OTP form is active */}
             <div className="alc-toggle-panel right">
               <p className="alc-eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>Standard Login</p>
               <h3>Have a password?</h3>
@@ -1143,7 +1279,7 @@ export default function AdminLoginForm({
             </div>
           </div>
 
-          {/* ── Status Bar ───────────────────────────────────────────── */}
+          {/* ── Status Bar ────────────────────────────────────────────── */}
           {status.message && (
             <div className={`alc-status ${status.type || "idle"}`}>
               {status.message}
