@@ -163,7 +163,7 @@ const styles = `
     pointer-events: none;
   }
 
-  /* OTP code input special styling */
+  /* ─── OTP code input ─── */
   .alc-otp-boxes {
     display: flex;
     gap: 8px;
@@ -178,28 +178,28 @@ const styles = `
     font-family: 'DM Mono', monospace;
     font-size: 28px;
     font-weight: 500;
-    background: rgba(255,255,255,0.08);
-    border: 1.5px solid rgba(255,255,255,0.15);
+    background: #f5f5f5;
+    border: 1.5px solid #ebebeb;
     border-radius: 12px;
-    color: #fff;
+    color: #0f0f0f;
     outline: none;
     transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.1s;
   }
 
   .alc-otp-box::placeholder {
-    color: rgba(255,255,255,0.2);
+    color: #bbb;
   }
 
   .alc-otp-box:focus {
-    border-color: rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.12);
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+    border-color: #0f0f0f;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(15,15,15,0.07);
     transform: translateY(-2px);
   }
 
-  /* Dark field labels (OTP panel) */
+  /* ─── OTP panel label ─── */
   .alc-form-box.otp .alc-field label {
-    color: rgba(255,255,255,0.55);
+    color: #555;
   }
 
   /* ─── Buttons ─── */
@@ -244,24 +244,24 @@ const styles = `
 
   /* Ghost button (OTP panel — send code) */
   .alc-btn-ghost {
-    background: rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.85);
-    border: 1.5px solid rgba(255,255,255,0.15);
+    background: #f5f5f5;
+    color: #0f0f0f;
+    border: 1.5px solid #ebebeb;
   }
 
   .alc-btn-ghost:hover:not(:disabled) {
-    background: rgba(255,255,255,0.14);
+    background: #ebebeb;
   }
 
-  /* White verify button (OTP panel) */
+  /* Dark verify button (OTP panel) */
   .alc-btn-white {
-    background: #fff;
-    color: #0f0f0f;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    background: #0f0f0f;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
   }
 
   .alc-btn-white:hover:not(:disabled) {
-    background: #f0f0f0;
+    background: #2a2a2a;
   }
 
   .alc-btn-white:disabled {
@@ -283,7 +283,6 @@ const styles = `
     pointer-events: none;
   }
 
-  /* The sliding blob */
   .alc-toggle-box::before {
     content: '';
     position: absolute;
@@ -301,7 +300,6 @@ const styles = `
     left: 50%;
   }
 
-  /* Toggle panels */
   .alc-toggle-panel {
     position: absolute;
     width: 50%;
@@ -353,7 +351,6 @@ const styles = `
     max-width: 300px;
   }
 
-  /* Toggle switch button */
   .alc-toggle-btn {
     display: inline-flex;
     align-items: center;
@@ -405,9 +402,9 @@ const styles = `
   }
 
   .alc-badge-dark {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.65);
+    background: #f5f5f5;
+    border: 1px solid #e8e8e8;
+    color: #666;
   }
 
   .alc-badge-light {
@@ -478,25 +475,25 @@ const styles = `
     color: #0f0f0f;
   }
 
-  /* ─── OTP box override: no white bg ─── */
+  /* ─── OTP panel: light theme base ─── */
   .alc-form-box.otp {
-    background: #0f0f0f;
-    color: #fff;
+    background: #fff;
+    color: #1a1a1a;
   }
 
   .alc-form-box.otp .alc-eyebrow {
-    color: rgba(255,255,255,0.35);
+    color: #999;
   }
 
   .alc-form-box.otp h2 {
-    color: #fff;
+    color: #0f0f0f;
   }
 
   .alc-form-box.otp .alc-subtitle {
-    color: rgba(255,255,255,0.5);
+    color: #888;
   }
 
-  /* ─── Theme overrides: dark mode uses only dark surfaces ─── */
+  /* ─── Dark mode ─── */
   .dark .alc-root {
     background: #050505;
     background-image:
@@ -535,19 +532,32 @@ const styles = `
     color: rgba(245,245,245,0.66);
   }
 
-  .dark .alc-input-wrap input,
+  .dark .alc-input-wrap input {
+    background: #171717;
+    border-color: #2f2f2f;
+    color: #f5f5f5;
+  }
+
+  .dark .alc-input-wrap input::placeholder {
+    color: rgba(245,245,245,0.34);
+  }
+
+  .dark .alc-input-wrap input:focus {
+    background: #111;
+    border-color: #737373;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  }
+
   .dark .alc-otp-box {
     background: #171717;
     border-color: #2f2f2f;
     color: #f5f5f5;
   }
 
-  .dark .alc-input-wrap input::placeholder,
   .dark .alc-otp-box::placeholder {
     color: rgba(245,245,245,0.34);
   }
 
-  .dark .alc-input-wrap input:focus,
   .dark .alc-otp-box:focus {
     background: #111;
     border-color: #737373;
@@ -566,7 +576,18 @@ const styles = `
   }
 
   .dark .alc-btn-primary,
-  .dark .alc-btn-white,
+  .dark .alc-btn-white {
+    background: #f5f5f5;
+    border: 1.5px solid #e8e8e8;
+    color: #0f0f0f;
+    box-shadow: none;
+  }
+
+  .dark .alc-btn-primary:hover:not(:disabled),
+  .dark .alc-btn-white:hover:not(:disabled) {
+    background: #e0e0e0;
+  }
+
   .dark .alc-btn-ghost {
     background: #171717;
     border: 1.5px solid #2f2f2f;
@@ -574,8 +595,6 @@ const styles = `
     box-shadow: none;
   }
 
-  .dark .alc-btn-primary:hover:not(:disabled),
-  .dark .alc-btn-white:hover:not(:disabled),
   .dark .alc-btn-ghost:hover:not(:disabled) {
     background: #242424;
   }
@@ -648,15 +667,15 @@ const styles = `
     .alc-form-box {
       bottom: 0;
       top: auto;
-      right: 0 !important;
+      right: 0;
       width: 100%;
       height: 70%;
       transition: bottom 0.6s ease-in-out 1.2s, visibility 0s 1s;
     }
 
     .alc-container.active .alc-form-box {
+      right: 0;
       bottom: 30%;
-      right: 0 !important;
     }
 
     .alc-form-box.otp {
@@ -667,8 +686,12 @@ const styles = `
       bottom: 30%;
     }
 
+    .alc-container.active .alc-form-box.password {
+      visibility: hidden;
+    }
+
     .alc-toggle-box::before {
-      left: 0 !important;
+      left: 0;
       top: -270%;
       width: 100%;
       height: 300%;
@@ -677,8 +700,8 @@ const styles = `
     }
 
     .alc-container.active .alc-toggle-box::before {
+      left: 0;
       top: 70%;
-      left: 0 !important;
     }
 
     .alc-toggle-panel {
@@ -689,7 +712,6 @@ const styles = `
     .alc-toggle-panel.left {
       top: 0;
       left: 0;
-      transition: top 0.6s ease-in-out;
       transition-delay: 1.2s;
     }
 
@@ -703,6 +725,7 @@ const styles = `
       right: 0;
       bottom: -30%;
       top: auto;
+      left: auto;
       transition: bottom 0.6s ease-in-out;
       transition-delay: 0.6s;
     }
