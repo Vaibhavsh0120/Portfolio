@@ -15,7 +15,7 @@
     "@vercel/speed-insights": "^1.3.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "firebase": "^12.13.0",
+    "firebase": "^12.14.0",
     "firebase-admin": "^13.10.0",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.537.0",
@@ -29,7 +29,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@types/node": "^24",
+    "@types/node": "^24.13.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
