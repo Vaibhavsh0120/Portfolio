@@ -4,7 +4,7 @@ import { ImagePlus, Trash2, UserRound } from "lucide-react"
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
-import type { AdminCmsController } from "@/components/admin/admin-types"
+import type { AdminCmsController } from "@/components/admin/core/admin-types"
 import {
   CollectionHeader,
   EmptyState,
@@ -15,8 +15,8 @@ import {
   inputClassName,
   itemClassName,
   textareaClassName,
-} from "@/components/admin/admin-ui"
-import { joinCommaList, newSkill, newTrait, removeAt, splitCommaList, updateAt } from "@/lib/admin/cms-utils"
+} from "@/components/admin/core/admin-ui"
+import { joinCommaList, newSkill, newTrait, removeAt, splitCommaList, updateAt } from "@/lib/cms/cms-utils"
 
 export function AboutEditor({ cms }: { cms: AdminCmsController }) {
   const { content, setContent } = cms
@@ -58,7 +58,9 @@ export function AboutEditor({ cms }: { cms: AdminCmsController }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="font-medium">About Image</p>
-            <p className="truncate text-sm text-neutral-500 dark:text-neutral-500">{content.about.imageUrl || "No image uploaded"}</p>
+            <p className="truncate text-sm text-neutral-500 dark:text-neutral-500">
+              {cms.pendingUploads.find((p) => p.type === "about") ? "New image pending save" : content.about.imageUrl || "No image uploaded"}
+            </p>
           </div>
           <label>
             <UploadLabel>
@@ -72,23 +74,48 @@ export function AboutEditor({ cms }: { cms: AdminCmsController }) {
               onChange={(event) => {
                 const file = event.target.files?.[0]
                 if (file) {
-                  void cms.handleUploadAboutImage(file)
+                  cms.handleStageAboutImage(file)
                 }
                 event.target.value = ""
               }}
             />
           </label>
         </div>
-        {content.about.imageUrl ? (
-          <Image
-            src={content.about.imageUrl}
-            alt={content.about.imageAlt}
-            width={640}
-            height={448}
-            unoptimized
-            className="mt-4 max-h-64 w-full rounded-lg object-cover md:w-auto"
-          />
-        ) : null}
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {content.about.imageUrl ? (
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+                {cms.pendingUploads.find((p) => p.type === "about") ? "Preview (Unsaved)" : "Current Image"}
+              </p>
+              <div className="relative h-48 sm:h-64 md:h-72 lg:h-80 w-full overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100/50 dark:border-neutral-800 dark:bg-neutral-900/50">
+                <Image
+                  src={content.about.imageUrl}
+                  alt={content.about.imageAlt}
+                  fill
+                  unoptimized
+                  className="object-contain p-2 sm:p-4"
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {cms.pendingUploads.find((p) => p.type === "about") && (
+            <div className="space-y-2 opacity-50 grayscale sm:opacity-100 sm:grayscale-0">
+              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Original Image</p>
+              <div className="relative min-h-[200px] overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
+                <Image
+                  src={JSON.parse(cms.savedContentFingerprint).about?.imageUrl || ""}
+                  alt="Original"
+                  fill
+                  unoptimized
+                  className="object-contain"
+                  onError={(e) => (e.currentTarget.style.display = "none")}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">

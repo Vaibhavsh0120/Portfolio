@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider } from '@/components/ui/theme-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -36,6 +36,25 @@ export const metadata: Metadata = {
       'Portfolio of Vaibhav Sharma — BTech CSE student & software developer',
     images: ['/api/og'],
   },
+  icons: [
+    {
+      rel: 'icon',
+      type: 'image/png',
+      url: '/logo-light.png',
+      media: '(prefers-color-scheme: light)',
+    },
+    {
+      rel: 'icon',
+      type: 'image/png',
+      url: '/logo-dark.png',
+      media: '(prefers-color-scheme: dark)',
+    },
+    {
+      rel: 'apple-touch-icon',
+      url: '/logo-light.png',
+    },
+  ],
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({

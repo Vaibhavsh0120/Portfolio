@@ -12,8 +12,8 @@ import {
 } from "firebase/firestore"
 import { getClientAuth, getClientDb } from "@/lib/firebase/client"
 
-import { emptyPortfolioContent, emptyResumeVersions } from "@/lib/portfolio/empty-content"
-import { PortfolioBundle, PortfolioContent, ResumeVersion } from "@/lib/portfolio/types"
+import { emptyPortfolioContent, emptyResumeVersions } from "@/lib/cms/empty-content"
+import { PortfolioBundle, PortfolioContent, ResumeVersion } from "@/lib/cms/types"
 
 function getPortfolioDocRef() {
   return doc(getClientDb(), "siteContent", "portfolio")
@@ -90,7 +90,7 @@ export async function loadPortfolioBundle(): Promise<PortfolioBundle> {
     resumes,
     meta: {
       contentSource: contentSnapshot.exists() ? "firestore" : "local-default",
-      resumeSource: resumesSnapshot.empty ? "local-default" : "firestore",
+      resumeSource: resumesSnapshot.empty ? "local-default" : "cloudinary",
     },
   }
 }

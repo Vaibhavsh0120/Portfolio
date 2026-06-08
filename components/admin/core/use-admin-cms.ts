@@ -10,7 +10,7 @@ import {
   type User,
 } from "firebase/auth"
 
-import type { AdminCmsController, StatusState } from "@/components/admin/admin-types"
+import type { AdminCmsController, PendingUpload, StatusState } from "@/components/admin/core/admin-types"
 import {
   createResumeVersion,
   loadPortfolioBundle,
@@ -19,9 +19,9 @@ import {
   uploadPortfolioFile,
 } from "@/lib/firebase/portfolio"
 import { adminEmails, getClientAuth, isAuthorizedAdminEmail } from "@/lib/firebase/client"
-import { getFileExtension, slugify, updateAt } from "@/lib/admin/cms-utils"
-import { emptyPortfolioContent } from "@/lib/portfolio/empty-content"
-import type { PortfolioBundle, PortfolioBundleMeta, PortfolioContent, ResumeVersion } from "@/lib/portfolio/types"
+import { getFileExtension, slugify, updateAt } from "@/lib/cms/cms-utils"
+import { emptyPortfolioContent } from "@/lib/cms/empty-content"
+import type { PortfolioBundle, PortfolioBundleMeta, PortfolioContent, ResumeVersion } from "@/lib/cms/types"
 
 const defaultBundleMeta: PortfolioBundleMeta = {
   contentSource: "local-default",
@@ -49,23 +49,23 @@ export function useAdminCms(): AdminCmsController {
   const [resumeLabel, setResumeLabel] = useState("Updated Resume")
   const [resumeNote, setResumeNote] = useState("")
   const [resumeFile, setResumeFile] = useState<File | null>(null)
+  
+  // Staging state
+  const [pendingUploads, setPendingUploads] = useState<PendingUpload[]>([])
+  const [croppingImage, setCroppingImage] = useState<AdminCmsController["croppingImage"]>(null)
+
   const isDark = resolvedTheme === "dark"
   const loaderColor = isDark ? "#f5f5f5" : "#171717"
   const contentFingerprint = JSON.stringify(content)
-  const hasUnsavedChanges = contentFingerprint !== savedContentFingerprint
+  const hasUnsavedChanges = contentFingerprint !== savedContentFingerprint || pendingUploads.length > 0
+
+  function clearStatus() {
+    setStatus({ type: "idle", message: "" })
+  }
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  useEffect(() => {
-    if (status.message && !user) {
-      const timer = setTimeout(() => {
-        setStatus({ type: "idle", message: "" })
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [status, user])
 
   useEffect(() => {
     if (!hasUnsavedChanges) {
@@ -133,6 +133,7 @@ export function useAdminCms(): AdminCmsController {
         }
 
         setUser(nextUser)
+        // Load bundle silently on mount/login
         await refreshBundle()
       })
     } catch (error) {
@@ -152,10 +153,11 @@ export function useAdminCms(): AdminCmsController {
   }, [])
 
   async function handleEmailSignIn() {
-    setStatus({ type: "idle", message: "" })
+    clearStatus()
 
     try {
       await signInWithEmailAndPassword(getClientAuth(), loginEmail.trim(), loginPassword)
+      // Success will be handled by onAuthStateChanged listener silently
     } catch (error) {
       console.error(error)
       setStatus({
@@ -169,7 +171,7 @@ export function useAdminCms(): AdminCmsController {
   }
 
   async function handleRequestOtp() {
-    setStatus({ type: "idle", message: "" })
+    clearStatus()
     setRequestingOtp(true)
 
     try {
@@ -197,7 +199,7 @@ export function useAdminCms(): AdminCmsController {
   }
 
   async function handleVerifyOtp() {
-    setStatus({ type: "idle", message: "" })
+    clearStatus()
     setVerifyingOtp(true)
 
     try {
@@ -222,10 +224,7 @@ export function useAdminCms(): AdminCmsController {
       await signInWithCustomToken(getClientAuth(), payload.customToken)
       setOtpRequested(false)
       setOtpCode("")
-      setStatus({
-        type: "success",
-        message: "Verification complete. Admin access granted.",
-      })
+      // Success will be handled by onAuthStateChanged listener silently
     } catch (error) {
       console.error(error)
       setStatus({
@@ -248,100 +247,115 @@ export function useAdminCms(): AdminCmsController {
 
     setOtpRequested(false)
     setOtpCode("")
-    setStatus({ type: "info", message: "Signed out from the admin panel." })
+    clearStatus()
   }
 
   async function handleSaveContent() {
     setSaving(true)
-    setStatus({ type: "idle", message: "" })
+    clearStatus()
 
     try {
+      const finalContent = { ...content }
+
+      // 1. Upload pending images first if any
+      if (pendingUploads.length > 0) {
+        setStatus({ type: "info", message: `Uploading ${pendingUploads.length} images...` })
+        
+        for (const pending of pendingUploads) {
+          const uploaded = await uploadPortfolioFile(pending.file, pending.storagePath)
+          
+          if (pending.type === "about") {
+            finalContent.about.imageUrl = uploaded.downloadUrl
+            finalContent.about.imagePath = uploaded.storagePath
+          } else if (pending.type === "project" && pending.projectIndex !== undefined) {
+            finalContent.projects.items[pending.projectIndex].image = uploaded.downloadUrl
+            finalContent.projects.items[pending.projectIndex].imagePath = uploaded.storagePath
+          }
+        }
+      }
+
       const savedAtMs = Date.now()
-      const nextContent = { ...content, updatedAtMs: savedAtMs }
-      await savePortfolioContent(nextContent)
-      setContent(nextContent)
-      setSavedContentFingerprint(JSON.stringify(nextContent))
+      finalContent.updatedAtMs = savedAtMs
+      
+      await savePortfolioContent(finalContent)
+      
+      setContent(finalContent)
+      setSavedContentFingerprint(JSON.stringify(finalContent))
+      setPendingUploads([]) // Clear pending uploads
+      
       setStatus({
         type: "success",
-        message: "Portfolio content saved to Firestore.",
+        message: "Portfolio content and images saved successfully.",
       })
     } catch (error) {
       console.error(error)
       setStatus({
         type: "error",
-        message: "Failed to save the portfolio content to Firestore.",
+        message: "Failed to save the portfolio content or upload images.",
       })
     } finally {
       setSaving(false)
     }
   }
 
-  async function handleUploadAboutImage(file: File) {
-    const extension = getFileExtension(file.name) || ".png"
-    const storagePath = `portfolio/images/profile/about-${Date.now()}${extension}`
-
-    try {
-      const uploaded = await uploadPortfolioFile(file, storagePath)
-      const nextContent = {
-        ...content,
-        about: {
-          ...content.about,
-          imageUrl: uploaded.downloadUrl,
-          imagePath: uploaded.storagePath,
-        },
-      }
-
-      setContent(nextContent)
-      await savePortfolioContent(nextContent)
-      setSavedContentFingerprint(JSON.stringify(nextContent))
-      setStatus({
-        type: "success",
-        message: "About image uploaded to Cloudinary and saved.",
-      })
-    } catch (error) {
-      console.error(error)
-      setStatus({
-        type: "error",
-        message: "Failed to upload the about image.",
-      })
-    }
+  function handleCancelChanges() {
+    setContent(JSON.parse(savedContentFingerprint))
+    setPendingUploads([])
+    setStatus({ type: "info", message: "Unsaved changes discarded." })
   }
 
-  async function handleUploadProjectImage(projectIndex: number, file: File) {
+  function handleStageAboutImage(file: File) {
+    const extension = getFileExtension(file.name) || ".png"
+    const storagePath = `portfolio/images/profile/about-${Date.now()}${extension}`
+    
+    setCroppingImage({
+      file,
+      onComplete: (croppedFile, previewUrl) => {
+        setPendingUploads(prev => [
+          ...prev.filter(p => p.type !== "about"),
+          { file: croppedFile, previewUrl, storagePath, type: "about" }
+        ])
+        setContent(prev => ({
+          ...prev,
+          about: { ...prev.about, imageUrl: previewUrl }
+        }))
+        setCroppingImage(null)
+      }
+    })
+  }
+
+  function handleStageProjectImage(projectIndex: number, file: File) {
     const project = content.projects.items[projectIndex]
     const extension = getFileExtension(file.name) || ".png"
     const storagePath = `portfolio/images/projects/${slugify(project.title || `project-${projectIndex + 1}`)}-${Date.now()}${extension}`
-
-    try {
-      const uploaded = await uploadPortfolioFile(file, storagePath)
-      const nextProjects = updateAt(content.projects.items, projectIndex, (item) => ({
-        ...item,
-        image: uploaded.downloadUrl,
-        imagePath: uploaded.storagePath,
-      }))
-
-      const nextContent = {
-        ...content,
-        projects: {
-          ...content.projects,
-          items: nextProjects,
-        },
+    
+    setCroppingImage({
+      file,
+      aspect: 3 / 2, // Project aspect
+      onComplete: (croppedFile, previewUrl) => {
+        setPendingUploads(prev => [
+          ...prev.filter(p => !(p.type === "project" && p.projectIndex === projectIndex)),
+          { file: croppedFile, previewUrl, storagePath, type: "project", projectIndex }
+        ])
+        setContent(prev => ({
+          ...prev,
+          projects: {
+            ...prev.projects,
+            items: updateAt(prev.projects.items, projectIndex, (item) => ({ ...item, image: previewUrl }))
+          }
+        }))
+        setCroppingImage(null)
       }
+    })
+  }
 
-      setContent(nextContent)
-      await savePortfolioContent(nextContent)
-      setSavedContentFingerprint(JSON.stringify(nextContent))
-      setStatus({
-        type: "success",
-        message: `Project image for "${project.title}" uploaded successfully.`,
-      })
-    } catch (error) {
-      console.error(error)
-      setStatus({
-        type: "error",
-        message: `Failed to upload the image for "${project.title}".`,
-      })
-    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function handleCommitStagedImage(_file: File, _previewUrl: string) {
+    // This is handled via croppingImage.onComplete
+  }
+
+  function handleCancelStaging() {
+    setCroppingImage(null)
   }
 
   async function handleResumeUpload() {
@@ -440,14 +454,21 @@ export function useAdminCms(): AdminCmsController {
     setResumeFile,
     loaderColor,
     hasUnsavedChanges,
+    savedContentFingerprint,
+    pendingUploads,
+    croppingImage,
+    clearStatus,
     refreshBundle,
     handleEmailSignIn,
     handleRequestOtp,
     handleVerifyOtp,
     handleLogout,
     handleSaveContent,
-    handleUploadAboutImage,
-    handleUploadProjectImage,
+    handleCancelChanges,
+    handleStageAboutImage,
+    handleStageProjectImage,
+    handleCommitStagedImage,
+    handleCancelStaging,
     handleResumeUpload,
     handleMakeCurrentResume,
   }

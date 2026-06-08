@@ -1,4 +1,4 @@
-import { PortfolioContent, ResumeVersion } from "@/lib/portfolio/types"
+import { PortfolioContent, ResumeVersion } from "@/lib/cms/types"
 
 export const emptyPortfolioContent: PortfolioContent = {
   hero: {

@@ -1,5 +1,5 @@
-import PortfolioApp from "@/components/portfolio-app"
+import { PortfolioScreen } from "@/components/portfolio/portfolio-screen"
 
 export default function Portfolio() {
-  return <PortfolioApp />
+  return <PortfolioScreen />
 }

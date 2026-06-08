@@ -6,7 +6,7 @@ import { ExternalLink, Github } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ProjectsContent } from "@/lib/portfolio/types"
+import { ProjectsContent } from "@/lib/cms/types"
 
 function FloatingShapes() {
   return (
@@ -99,13 +99,12 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
               <div className={`${index % 2 === 1 ? "lg:col-start-2" : ""} order-1 lg:order-none`}>
                 <div className="group relative">
                   <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-neutral-200/40 to-neutral-300/40 opacity-60 blur-2xl transition-all duration-500 group-hover:blur-3xl dark:from-neutral-700/40 dark:to-neutral-600/40" />
-                  <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border border-neutral-200/50 shadow-2xl transition-shadow duration-500 group-hover:shadow-3xl dark:border-neutral-700/50 lg:mx-0">
+                  <div className="relative mx-auto aspect-[4/3] max-w-2xl overflow-hidden rounded-2xl border border-neutral-200/50 shadow-2xl transition-shadow duration-500 group-hover:shadow-3xl dark:border-neutral-700/50 lg:mx-0">
                     <Image
                       src={project.image || "/placeholder.svg"}
                       alt={project.title}
-                      width={800}
-                      height={600}
-                      className="h-auto max-h-80 w-full object-cover transition-transform duration-700 group-hover:scale-105 md:max-h-96 lg:max-h-none"
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   </div>
@@ -220,16 +219,15 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
                 viewport={{ once: true }}
                 className="group"
               >
-                <Card className="relative h-full overflow-hidden border border-neutral-200/50 bg-white/80 shadow-xl backdrop-blur-sm transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl dark:border-neutral-700/50 dark:bg-neutral-800/80">
+                <Card className="relative flex h-full flex-col overflow-hidden border border-neutral-200/50 bg-white/80 shadow-xl backdrop-blur-sm transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl dark:border-neutral-700/50 dark:bg-neutral-800/80">
                   <div className="absolute inset-0 bg-gradient-to-br from-neutral-50/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:from-neutral-700/20 dark:to-transparent" />
 
-                  <div className="relative overflow-hidden">
+                  <div className="relative aspect-[3/2] shrink-0 overflow-hidden">
                     <Image
                       src={project.image || "/placeholder.svg"}
                       alt={project.title}
-                      width={500}
-                      height={300}
-                      className="h-40 w-full object-cover transition-transform duration-700 group-hover:scale-110 md:h-48"
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute right-4 top-4 flex items-center gap-2 text-xs text-white/80">
                       <div className="rounded-full bg-black/20 px-2 py-1 backdrop-blur-sm">
@@ -241,14 +239,14 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
                     </div>
                   </div>
 
-                  <CardContent className="relative z-10 p-4 md:p-6">
+                  <CardContent className="relative z-10 flex flex-1 flex-col p-4 md:p-6">
                     <h4 className="mb-2 text-lg font-semibold text-neutral-900 dark:text-white md:mb-3 md:text-xl">
                       {project.title}
                     </h4>
-                    <p className="mb-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 md:mb-4 md:text-base">
+                    <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 md:mb-4 md:text-base">
                       {project.description}
                     </p>
-                    <div className="mb-4 flex flex-wrap gap-1.5 md:mb-6 md:gap-2">
+                    <div className="mb-4 mt-auto flex flex-wrap gap-1.5 md:mb-6 md:gap-2">
                       {project.technologies.map((technology) => (
                         <span
                           key={technology}

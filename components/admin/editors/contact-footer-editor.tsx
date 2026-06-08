@@ -3,7 +3,7 @@
 import { Contact, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { AdminCmsController } from "@/components/admin/admin-types"
+import type { AdminCmsController } from "@/components/admin/core/admin-types"
 import {
   CollectionHeader,
   EmptyState,
@@ -12,9 +12,9 @@ import {
   TextField,
   inputClassName,
   itemClassName,
-} from "@/components/admin/admin-ui"
+} from "@/components/admin/core/admin-ui"
 import { SocialLinksEditor } from "@/components/admin/editors/social-links-editor"
-import { removeAt, updateAt } from "@/lib/admin/cms-utils"
+import { removeAt, updateAt } from "@/lib/cms/cms-utils"
 
 export function ContactFooterEditor({ cms }: { cms: AdminCmsController }) {
   const { content, setContent } = cms

@@ -1,9 +1,6 @@
-"use client"
-
 import { LoadingScreen } from "@/components/ui/loading-screen"
 
-export function AdminLoadingScreen() {
-  // We ignore mounted and loaderColor here as LoadingScreen handles its own mounting state and theme-aware colors
+export default function Loading() {
   return (
     <LoadingScreen 
       label="Portfolio CMS" 

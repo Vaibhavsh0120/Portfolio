@@ -4,7 +4,7 @@ import type {
   ProjectItem,
   SkillCategory,
   SocialLink,
-} from "@/lib/portfolio/types"
+} from "@/lib/cms/types"
 
 export const newSocialLink: SocialLink = { label: "New Link", href: "https://" }
 export const newTrait: AboutTrait = { title: "New Trait", description: "Describe it" }
@@ -58,7 +58,8 @@ export function removeAt<T>(items: T[], index: number) {
   return items.filter((_, itemIndex) => itemIndex !== index)
 }
 
-export function describeSource(source: "firestore" | "local-default") {
+export function describeSource(source: "firestore" | "local-default" | "cloudinary") {
+  if (source === "cloudinary") return "Cloudinary"
   return source === "firestore" ? "Firestore" : "Local fallback"
 }
 

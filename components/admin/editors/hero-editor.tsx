@@ -2,8 +2,8 @@
 
 import { Sparkles } from "lucide-react"
 
-import type { AdminCmsController } from "@/components/admin/admin-types"
-import { SectionPanel, TextAreaField, TextField } from "@/components/admin/admin-ui"
+import type { AdminCmsController } from "@/components/admin/core/admin-types"
+import { SectionPanel, TextAreaField, TextField } from "@/components/admin/core/admin-ui"
 import { SocialLinksEditor } from "@/components/admin/editors/social-links-editor"
 
 export function HeroEditor({ cms }: { cms: AdminCmsController }) {

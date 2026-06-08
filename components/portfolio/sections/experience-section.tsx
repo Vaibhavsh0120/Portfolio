@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Briefcase, Calendar } from "lucide-react"
 
-import { ExperienceContent } from "@/lib/portfolio/types"
+import { ExperienceContent } from "@/lib/cms/types"
 
 interface ExperienceSectionProps {
   experience: ExperienceContent

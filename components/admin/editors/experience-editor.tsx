@@ -3,7 +3,7 @@
 import { Briefcase, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { AdminCmsController } from "@/components/admin/admin-types"
+import type { AdminCmsController } from "@/components/admin/core/admin-types"
 import {
   CollectionHeader,
   EmptyState,
@@ -12,8 +12,8 @@ import {
   inputClassName,
   itemClassName,
   textareaClassName,
-} from "@/components/admin/admin-ui"
-import { joinCommaList, newExperienceProject, removeAt, splitCommaList, updateAt } from "@/lib/admin/cms-utils"
+} from "@/components/admin/core/admin-ui"
+import { joinCommaList, newExperienceProject, removeAt, splitCommaList, updateAt } from "@/lib/cms/cms-utils"
 
 export function ExperienceEditor({ cms }: { cms: AdminCmsController }) {
   const { content, setContent } = cms

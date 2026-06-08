@@ -4,9 +4,9 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import { Code, Heart, Lightbulb, Palette, Target, Zap } from "lucide-react"
 
-import ExperienceSection from "@/components/experience-section"
+import ExperienceSection from "@/components/portfolio/sections/experience-section"
 import { Card, CardContent } from "@/components/ui/card"
-import { AboutContent, ExperienceContent } from "@/lib/portfolio/types"
+import { AboutContent, ExperienceContent } from "@/lib/cms/types"
 
 const skillIcons = [Code, Palette, Zap]
 const traitIcons = [Heart, Lightbulb, Target]

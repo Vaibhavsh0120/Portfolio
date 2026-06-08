@@ -132,7 +132,7 @@ export interface ResumeVersion {
   note: string
 }
 
-export type PortfolioDataSource = "firestore" | "local-default"
+export type PortfolioDataSource = "firestore" | "local-default" | "cloudinary"
 
 export interface PortfolioBundleMeta {
   contentSource: PortfolioDataSource

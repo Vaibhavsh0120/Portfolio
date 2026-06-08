@@ -5,14 +5,10 @@
 A modern, fully responsive portfolio showcasing my work, skills, and journey.
 Built with cutting-edge technologies for a smooth user experience, high performance, and a clean, appealing design.
 
-
-* 📱 **Fully Responsive** – Optimized for desktops, tablets, and mobile devices
-
-
+* 📱 **Fully Responsive & PWA** – Installable Web App optimized for all devices
 * ⚛️ **Built with Next.js + TypeScript** – Fast, scalable, and maintainable codebase  
-
-
-* 🌙 **Dark/Light Mode** – Seamless theme switching for improved accessibility 
+* 🌙 **Dark/Light Mode** – Seamless theme switching with adaptive logos
+* 📝 **Integrated Headless CMS** – Secure, custom-built admin panel for instant content updates
 
 ---
 
@@ -32,8 +28,10 @@ Built with cutting-edge technologies for a smooth user experience, high performa
 ## ✨ Features
 
 - 🎨 **Modern UI/UX** – Minimal, clean design with smooth animations  
-- 🌙 **Dark/Light Mode** – Seamless theme switching via `next-themes`  
-- 📱 **Fully Responsive** – Works on all devices  
+- 🌙 **Dark/Light Mode** – Seamless theme switching via `next-themes`
+- 📱 **Progressive Web App (PWA)** – Installable on desktop and mobile with theme-aware icons
+- 🔒 **Custom Built CMS (`/admin`)** – Authenticated dashboard to manage portfolio content dynamically
+- 🖼️ **Image Management** – Built-in cropping tool and direct Cloudinary integrations for optimized asset delivery
 - 💼 **Projects Showcase** – With live demos & GitHub links  
 - 📩 **Contact Form** – Validation & status feedback  
 - 📄 **Resume Download** – One-click CV download  
@@ -44,56 +42,41 @@ Built with cutting-edge technologies for a smooth user experience, high performa
 ## 🛠 Tech Stack
 
 - **Framework:** [Next.js](https://nextjs.org/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)  
+- **Database & Auth:** [Firebase](https://firebase.google.com/) (Firestore & Firebase Auth)
+- **Asset Hosting:** [Cloudinary](https://cloudinary.com/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Framer Motion](https://www.framer.com/motion/)  
 - **Icons:** [Lucide React](https://lucide.dev/)  
 - **Deployment:** [Vercel](https://vercel.com/)  
 
 ---
 
-## 📂 Folder Structure
+## 📂 Architecture & Structure
 
 ```
 vaibhav-portfolio/
-├── app/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
+├── app/                      # Next.js Routing
+│   ├── admin/                # Secure CMS route
+│   ├── api/                  # API endpoints (Auth, Uploads)
+│   ├── globals.css           # Global Tailwind styles
+│   ├── layout.tsx            # Root layout & Metadata
+│   └── page.tsx              # Portfolio entry point
 ├── components/
-│   ├── about-section.tsx
-│   ├── contact-section.tsx
-│   ├── footer.tsx
-│   ├── hero-section.tsx
-│   ├── projects-section.tsx
-│   ├── scroll-indicator.tsx
-│   ├── theme-toggle.tsx
-│   ├── theme-provider.tsx
-│   └── ui/
-│       ├── button.tsx
-│       └── card.tsx
+│   ├── admin/                # CMS Dashboard components
+│   │   ├── core/             # Core CMS logic & hooks
+│   │   ├── editors/          # Content specific editor panels
+│   │   └── screens/          # Top-level CMS views
+│   ├── portfolio/            # Public Portfolio components
+│   │   └── sections/         # Feature blocks (Hero, About, Projects)
+│   └── ui/                   # Reusable UI building blocks (Buttons, Cards, Loaders)
 ├── lib/
-│   └── utils.ts
-├── public/
-│   ├── cv/
-│   │   └── Vaibhav\_Sharma\_CV.pdf
-│   ├── images/
-│   │   ├── projects/
-│   │   │   ├── lifebeat-app.png
-│   │   │   ├── cargoguardian-iot.png
-│   │   │   ├── signwave-translator.png
-│   │   │   ├── campus-care-app.png
-│   │   │   ├── space-tools-ai.png
-│   │   │   └── timetable-management.png
-│   │   └── profile/
-│   │       └── vaibhav-about.jpg
-│   └── favicon.ico
-├── .gitignore
-├── README.md
-├── next.config.js
-├── package.json
-├── postcss.config.js
-├── tailwind.config.js
-└── tsconfig.json
-
+│   ├── cms/                  # Content modeling & typing
+│   ├── cloudinary/           # Image hosting utilities
+│   ├── core/                 # Shared generic utilities
+│   └── firebase/             # Database and Auth integrations
+├── public/                   # Static assets (Logos, Web App Manifest)
+├── .env.example              # Environment variables template
+├── package.json              # Project dependencies
+└── tailwind.config.js        # Tailwind CSS configuration
 ```
 
 ---
@@ -112,13 +95,19 @@ vaibhav-portfolio/
    npm install
    ```
 
-3. **Run the development server**
+3. **Configure Environment Variables**
+   * Create a `.env.local` file based on `.env.example`
+   * Add your Firebase configuration keys
+   * Add your Cloudinary API keys
+   * Set your `ADMIN_EMAIL`
+
+4. **Run the development server**
 
    ```bash
    npm run dev
    ```
 
-4. **Build for production**
+5. **Build for production**
 
    ```bash
    npm run build

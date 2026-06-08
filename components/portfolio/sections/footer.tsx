@@ -1,9 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { Github, Linkedin, Mail } from "lucide-react"
 
-import { FooterContent } from "@/lib/portfolio/types"
+import { FooterContent } from "@/lib/cms/types"
 
 function getSocialIcon(label: string, href: string) {
   const key = `${label} ${href}`.toLowerCase()
@@ -35,7 +36,11 @@ export default function Footer({ footer }: FooterProps) {
           className="flex flex-col items-center justify-between gap-6 md:flex-row"
         >
           <div className="text-center md:text-left">
-            <h3 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-white">{footer.name}</h3>
+            <h3 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-white">
+              <Link href="/admin" className="cursor-text focus:outline-none">
+                {footer.name}
+              </Link>
+            </h3>
             <p className="text-neutral-600 dark:text-neutral-400">{footer.tagline}</p>
           </div>
 

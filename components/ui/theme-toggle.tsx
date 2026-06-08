@@ -1,12 +1,13 @@
 "use client"
 
-import { Moon, Sun } from 'lucide-react'
+import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
+import { cn } from "@/lib/core/utils"
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ className, inline = false }: { className?: string; inline?: boolean }) {
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -17,13 +18,14 @@ export default function ThemeToggle() {
   if (!mounted) {
     // Return a neutral placeholder to prevent layout shift
     return (
-      <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
+      <div className={cn(!inline && "fixed top-4 right-4 md:top-6 md:right-6 z-50", className)}>
         <Button
           variant="outline"
           size="icon"
-          className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 dark:bg-neutral-800/90 
-                   backdrop-blur-sm border-neutral-200 dark:border-neutral-700 shadow-lg
-                   transition-all duration-500"
+          className={cn(
+            "relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm border-neutral-200 dark:border-neutral-700 shadow-lg transition-all duration-500",
+            inline && "w-9 h-9 md:w-9 md:h-9 shadow-none border-none bg-transparent dark:bg-transparent"
+          )}
           disabled
         >
           <div className="h-4 w-4 md:h-5 md:w-5" />
@@ -33,15 +35,15 @@ export default function ThemeToggle() {
     )
   }
 
-  const isDark = resolvedTheme === 'dark'
+  const isDark = resolvedTheme === "dark"
 
   const handleToggle = () => {
     // If currently on system theme, switch to the opposite of current resolved theme
-    if (theme === 'system') {
-      setTheme(isDark ? 'light' : 'dark')
+    if (theme === "system") {
+      setTheme(isDark ? "light" : "dark")
     } else {
       // If already on manual theme, toggle between light and dark
-      setTheme(theme === 'dark' ? 'light' : 'dark')
+      setTheme(theme === "dark" ? "light" : "dark")
     }
   }
 
@@ -50,16 +52,17 @@ export default function ThemeToggle() {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="fixed top-4 right-4 md:top-6 md:right-6 z-50"
+      className={cn(!inline && "fixed top-4 right-4 md:top-6 md:right-6 z-50", className)}
     >
       <Button
         variant="outline"
         size="icon"
         onClick={handleToggle}
-        className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 dark:bg-neutral-800/90 
-                 backdrop-blur-sm border-neutral-200 dark:border-neutral-700 shadow-lg hover:shadow-xl
-                 transition-all duration-500 hover:scale-110 active:scale-95
-                 hover:bg-white dark:hover:bg-neutral-800"
+        className={cn(
+          "relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm border-neutral-200 dark:border-neutral-700 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-110 active:scale-95 hover:bg-white dark:hover:bg-neutral-800",
+          inline &&
+            "w-9 h-9 md:w-9 md:h-9 shadow-none border-none bg-transparent dark:bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:scale-100"
+        )}
       >
         <AnimatePresence mode="wait" initial={false}>
           {isDark ? (
@@ -71,7 +74,7 @@ export default function ThemeToggle() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <Moon className="h-4 w-4 md:h-5 md:w-5 text-neutral-700 dark:text-neutral-300" />
+              <Moon className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
             </motion.div>
           ) : (
             <motion.div
@@ -82,7 +85,7 @@ export default function ThemeToggle() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <Sun className="h-4 w-4 md:h-5 md:w-5 text-neutral-700 dark:text-neutral-300" />
+              <Sun className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
             </motion.div>
           )}
         </AnimatePresence>

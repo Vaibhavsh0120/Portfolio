@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Github, Linkedin, Mail } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { HeroContent, ResumeVersion } from "@/lib/portfolio/types"
+import { HeroContent, ResumeVersion } from "@/lib/cms/types"
 
 function FloatingPaths({ position }: { position: number }) {
   const paths = Array.from({ length: 24 }, (_, i) => ({

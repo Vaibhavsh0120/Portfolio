@@ -2,8 +2,8 @@
 
 import { type ComponentType, type InputHTMLAttributes, type SVGProps, useState, useRef } from "react";
 
-import type { AdminCmsController, StatusState } from "@/components/admin/admin-types";
-import ThemeToggle from "@/components/theme-toggle";
+import type { AdminCmsController, StatusState } from "@/components/admin/core/admin-types";
+import ThemeToggle from "@/components/ui/theme-toggle";
 import { adminEmails } from "@/lib/firebase/client";
 
 const styles = `
@@ -557,6 +557,7 @@ const styles = `
   .dark .alc-toggle-panel       { color: #f5f5f5; }
   .dark .alc-toggle-panel p     { color: rgba(245,245,245,0.58); }
   .dark .alc-toggle-btn         { border-color: rgba(245,245,245,0.26); color: #f5f5f5; }
+  .dark .alc-toggle-btn:hover   { background: #f5f5f5; color: #0f0f0f; border-color: #f5f5f5; }
 
   .dark .alc-form-box.otp .alc-subtitle span { color: rgba(245,245,245,0.75); }
 

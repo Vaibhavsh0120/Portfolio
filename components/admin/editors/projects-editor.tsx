@@ -1,9 +1,10 @@
 "use client"
 
 import { ArrowUpRight, FolderKanban, ImagePlus, Trash2 } from "lucide-react"
+import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
-import type { AdminCmsController } from "@/components/admin/admin-types"
+import type { AdminCmsController } from "@/components/admin/core/admin-types"
 import {
   CollectionHeader,
   EmptyState,
@@ -14,8 +15,8 @@ import {
   inputClassName,
   itemClassName,
   textareaClassName,
-} from "@/components/admin/admin-ui"
-import { createProject, joinCommaList, removeAt, splitCommaList, updateAt } from "@/lib/admin/cms-utils"
+} from "@/components/admin/core/admin-ui"
+import { createProject, joinCommaList, removeAt, splitCommaList, updateAt } from "@/lib/cms/cms-utils"
 
 export function ProjectsEditor({ cms }: { cms: AdminCmsController }) {
   const { content, setContent } = cms
@@ -219,7 +220,7 @@ export function ProjectsEditor({ cms }: { cms: AdminCmsController }) {
                 onChange={(event) => {
                   const file = event.target.files?.[0]
                   if (file) {
-                    void cms.handleUploadProjectImage(index, file)
+                    cms.handleStageProjectImage(index, file)
                   }
                   event.target.value = ""
                 }}
@@ -232,10 +233,47 @@ export function ProjectsEditor({ cms }: { cms: AdminCmsController }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-100"
               >
-                Preview Image
+                Preview Link
                 <ArrowUpRight className="h-4 w-4" />
               </a>
             ) : null}
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {project.image ? (
+              <div className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+                  {cms.pendingUploads.find((p) => p.type === "project" && p.projectIndex === index)
+                    ? "Preview (Unsaved)"
+                    : "Current Image"}
+                </p>
+                <div className="relative min-h-[200px] overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    unoptimized
+                    className="object-contain bg-neutral-100/50 dark:bg-neutral-900/50"
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {cms.pendingUploads.find((p) => p.type === "project" && p.projectIndex === index) && (
+              <div className="space-y-2 opacity-50 grayscale sm:opacity-100 sm:grayscale-0">
+                <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Original Image</p>
+                <div className="relative h-48 sm:h-64 md:h-72 lg:h-80 w-full overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100/50 dark:border-neutral-800 dark:bg-neutral-900/50 aspect-[3/2]">
+                  <Image
+                    src={JSON.parse(cms.savedContentFingerprint).projects?.items?.[index]?.image || ""}
+                    alt="Original"
+                    fill
+                    unoptimized
+                    className="object-contain p-2 sm:p-4"
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ))}

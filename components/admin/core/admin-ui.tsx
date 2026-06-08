@@ -1,12 +1,12 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { type ReactNode, useEffect, useRef } from "react"
 import { CheckCircle2, Plus } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import type { StatusState } from "@/components/admin/admin-types"
+import type { StatusState } from "@/components/admin/core/admin-types"
 
 export const inputClassName =
   "h-11 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-800"
@@ -85,10 +85,20 @@ export function TextField({ label, value, onChange, placeholder, type = "text", 
 }
 
 export function TextAreaField({ label, value, onChange, placeholder, rows = 3, hint, className }: TextAreaFieldProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [value])
+
   return (
     <Field label={label} hint={hint} className={className}>
       <textarea
-        className={textareaClassName}
+        ref={textareaRef}
+        className={`${textareaClassName} resize-none overflow-hidden`}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
@@ -114,26 +124,26 @@ export function SectionPanel({
   children: ReactNode
 }) {
   return (
-    <Card id={id} className={`${panelClassName} scroll-mt-24`}>
-      <CardHeader className="gap-1 border-b border-neutral-100 pb-5 dark:border-neutral-900">
+    <Card id={id} className={`${panelClassName} scroll-mt-24 overflow-hidden`}>
+      <CardHeader className="gap-1 border-b border-neutral-100 p-4 pb-5 dark:border-neutral-900 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <span className="rounded-lg border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="shrink-0 rounded-lg border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-800 dark:bg-neutral-900">
               <Icon className="h-5 w-5" />
             </span>
-            <div>
-              <CardTitle className="text-xl">{title}</CardTitle>
-              <CardDescription className="mt-1">{description}</CardDescription>
+            <div className="min-w-0">
+              <CardTitle className="truncate text-lg sm:text-xl">{title}</CardTitle>
+              <CardDescription className="mt-1 break-words leading-relaxed">{description}</CardDescription>
             </div>
           </div>
           {count ? (
-            <span className="rounded-full border border-neutral-200 px-3 py-1 text-xs font-medium text-neutral-600 dark:border-neutral-800 dark:text-neutral-400">
+            <span className="shrink-0 rounded-full border border-neutral-200 px-3 py-1 text-xs font-medium text-neutral-600 dark:border-neutral-800 dark:text-neutral-400">
               {count}
             </span>
           ) : null}
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 pt-6">{children}</CardContent>
+      <CardContent className="space-y-6 p-4 pt-6 sm:p-6">{children}</CardContent>
     </Card>
   )
 }
@@ -151,13 +161,13 @@ export function CollectionHeader({
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <p className="font-medium">{title}</p>
+      <div className="min-w-0">
+        <p className="font-medium truncate">{title}</p>
         <p className="text-sm text-neutral-500 dark:text-neutral-500">
           {count} item{count === 1 ? "" : "s"}
         </p>
       </div>
-      <Button size="sm" variant="outline" onClick={onAdd}>
+      <Button size="sm" variant="outline" onClick={onAdd} className="shrink-0">
         <Plus className="mr-2 h-4 w-4" />
         {addLabel}
       </Button>
@@ -175,12 +185,12 @@ export function EmptyState({ label }: { label: string }) {
 
 export function MetricCard({ label, value, icon: Icon }: { label: string; value: string; icon: LucideIcon }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-neutral-50/80 p-4 dark:border-neutral-800 dark:bg-neutral-900/60">
-      <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-500">
-        <Icon className="h-4 w-4" />
-        {label}
+    <div className="rounded-lg border border-neutral-200 bg-neutral-50/80 p-3 sm:p-4 dark:border-neutral-800 dark:bg-neutral-900/60">
+      <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-neutral-500 dark:text-neutral-500">
+        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <span className="truncate">{label}</span>
       </div>
-      <p className="mt-2 text-lg font-semibold text-neutral-950 dark:text-neutral-50">{value}</p>
+      <p className="mt-1.5 sm:mt-2 text-base sm:text-lg font-semibold text-neutral-950 dark:text-neutral-50 truncate">{value}</p>
     </div>
   )
 }

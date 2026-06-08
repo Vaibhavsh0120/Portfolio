@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ThemeToggle from "@/components/theme-toggle";
+import ThemeToggle from "@/components/ui/theme-toggle";
 
 export default function NotFound() {
   return (

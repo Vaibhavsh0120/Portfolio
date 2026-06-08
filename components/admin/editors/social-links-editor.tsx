@@ -3,9 +3,9 @@
 import { Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { CollectionHeader, EmptyState, inputClassName, itemClassName } from "@/components/admin/admin-ui"
-import { newSocialLink, removeAt, updateAt } from "@/lib/admin/cms-utils"
-import type { SocialLink } from "@/lib/portfolio/types"
+import { CollectionHeader, EmptyState, inputClassName, itemClassName } from "@/components/admin/core/admin-ui"
+import { newSocialLink, removeAt, updateAt } from "@/lib/cms/cms-utils"
+import type { SocialLink } from "@/lib/cms/types"
 
 export function SocialLinksEditor({
   links,

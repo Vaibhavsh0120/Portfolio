@@ -7,7 +7,7 @@ import { AlertCircle, CheckCircle, Clock, Mail, MapPin, MessageCircle, Send } fr
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ContactContent } from "@/lib/portfolio/types"
+import { ContactContent } from "@/lib/cms/types"
 
 function ContactBackground() {
   return (

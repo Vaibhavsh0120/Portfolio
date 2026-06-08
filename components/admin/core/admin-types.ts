@@ -3,11 +3,19 @@
 import type { Dispatch, SetStateAction } from "react"
 import type { User } from "firebase/auth"
 
-import type { PortfolioBundleMeta, PortfolioContent, ResumeVersion } from "@/lib/portfolio/types"
+import type { PortfolioBundleMeta, PortfolioContent, ResumeVersion } from "@/lib/cms/types"
 
 export type StatusState = {
   type: "idle" | "success" | "error" | "info"
   message: string
+}
+
+export type PendingUpload = {
+  file: File
+  previewUrl: string
+  storagePath: string
+  type: "about" | "project"
+  projectIndex?: number
 }
 
 export type AdminCmsController = {
@@ -38,14 +46,25 @@ export type AdminCmsController = {
   setResumeFile: Dispatch<SetStateAction<File | null>>
   loaderColor: string
   hasUnsavedChanges: boolean
+  savedContentFingerprint: string
+  pendingUploads: PendingUpload[]
+  clearStatus: () => void
   refreshBundle: (options?: { announce?: boolean }) => Promise<unknown>
   handleEmailSignIn: () => Promise<void>
   handleRequestOtp: () => Promise<void>
   handleVerifyOtp: () => Promise<void>
   handleLogout: () => Promise<void>
   handleSaveContent: () => Promise<void>
-  handleUploadAboutImage: (file: File) => Promise<void>
-  handleUploadProjectImage: (projectIndex: number, file: File) => Promise<void>
+  handleCancelChanges: () => void
+  handleStageAboutImage: (file: File) => void
+  handleStageProjectImage: (projectIndex: number, file: File) => void
+  handleCommitStagedImage: (file: File, previewUrl: string) => void
+  handleCancelStaging: () => void
   handleResumeUpload: () => Promise<void>
   handleMakeCurrentResume: (resumeId: string) => Promise<void>
+  croppingImage: {
+    file: File
+    aspect?: number
+    onComplete: (file: File, previewUrl: string) => void
+  } | null
 }

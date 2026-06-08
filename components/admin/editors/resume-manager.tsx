@@ -3,8 +3,8 @@
 import { ArrowUpRight, FileText, Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { AdminCmsController } from "@/components/admin/admin-types"
-import { EmptyState, Field, SectionPanel, TextAreaField, TextField, inputClassName, itemClassName } from "@/components/admin/admin-ui"
+import type { AdminCmsController } from "@/components/admin/core/admin-types"
+import { EmptyState, Field, SectionPanel, TextAreaField, TextField, inputClassName, itemClassName } from "@/components/admin/core/admin-ui"
 
 export function ResumeManager({ cms }: { cms: AdminCmsController }) {
   return (
